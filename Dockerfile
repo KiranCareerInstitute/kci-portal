@@ -1,14 +1,12 @@
-# Use OpenJDK 17 as base
-FROM openjdk:17-jdk-slim
-
-# Set working directory
+# === 1st Stage: Build with Maven ===
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy built JAR (built externally or via Docker multi-stage in future)
-COPY target/portal-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose port
-EXPOSE 8082
-
-# Run the app
+# === 2nd Stage: Run the app ===
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
