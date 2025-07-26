@@ -91,7 +91,24 @@
 </head>
 <body>
 <!-- Sidebar -->
-<div class="sidebar d-flex flex-column align-items-start px-3">
+
+<!-- Mobile Offcanvas Sidebar Toggle -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark d-md-none">
+  <div class="container-fluid">
+    <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+      <i class="bi bi-list"></i>
+    </button>
+    <span class="navbar-brand mb-0 h1">KCI Admin</span>
+  </div>
+</nav>
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">KCI Admin</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <div class="sidebar-inner d-flex flex-column align-items-start px-3">
+      
     <h4 class="text-center w-100">KCI Admin</h4>
     <a th:href="@{/admin/dashboard}" th:classappend="${currentPath == '/admin'} ? 'active text-white bg-primary' : ''">
         <i class="bi bi-speedometer2"></i> Dashboard
@@ -135,6 +152,57 @@
     <a th:href="@{/admin/chat/tutor-threads}" th:classappend="${currentPath == '/admin/chat/tutor-threads'} ? 'active text-white bg-primary' : ''">
         <i class="bi bi-person-lines-fill"></i> View Tutor Chats
     </a>
+
+    </div>
+  </div>
+</div>
+<!-- Desktop Sidebar -->
+<div class="sidebar d-none d-md-flex flex-column align-items-start px-3">
+  
+    <h4 class="text-center w-100">KCI Admin</h4>
+    <a th:href="@{/admin/dashboard}" th:classappend="${currentPath == '/admin'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a th:href="@{/admin/users}" th:classappend="${currentPath == '/admin/users'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-people-fill"></i> Users
+    </a>
+    <a th:href="@{/admin/modules}" th:classappend="${currentPath == '/admin/modules'} ? '' : ''">
+        <i class="bi bi-journal-richtext"></i> Modules
+    </a>
+    <a th:href="@{/admin/assignments}" th:classappend="${currentPath == '/admin/assignments'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-upload"></i> Assignments
+    </a>
+    <a th:href="@{/admin/doubts}" th:classappend="${currentPath == '/admin/doubts'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-question-circle-fill"></i> Student Doubts
+    </a>
+    <a th:href="@{/admin/videos}" th:classappend="${currentPath == '/admin/videos'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-camera-video"></i> Video Solutions
+    </a>
+    <a th:href="@{/admin/tests}" th:classappend="${currentPath == '/admin/tests'} ? '' : ''">
+        <i class="bi bi-file-earmark-text"></i> Manage Tests
+    </a>
+    <a th:href="@{/admin/review-results}" th:classappend="${currentPath == '/admin/review-results'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-clipboard-check"></i> Review Submissions
+    </a>
+    <a th:href="@{/admin/feedback/list}" th:classappend="${currentPath == '/admin/feedback/list'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-chat-left-dots"></i> Session Feedbacks
+    </a>
+    <a th:href="@{/admin/results/upload}" th:classappend="${currentPath == '/admin/results/upload'} ? '' : ''">
+        <i class="bi bi-upload"></i> Upload Result
+    </a>
+    <a th:href="@{/admin/results}" th:classappend="${currentPath == '/admin/results'} ? '' : ''">
+        <i class="bi bi-card-list"></i> View Results
+    </a>
+    <a th:href="@{/admin/queries}" th:classappend="${currentPath == '/admin/queries'} ? '' : ''">
+        <i class="bi bi-chat-left-text"></i> Student Queries
+    </a>
+    <a th:href="@{/admin/chat/threads}" th:classappend="${currentPath == '/admin/chat/threads'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-chat-left-text"></i> View Student Chats
+    </a>
+    <a th:href="@{/admin/chat/tutor-threads}" th:classappend="${currentPath == '/admin/chat/tutor-threads'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-person-lines-fill"></i> View Tutor Chats
+    </a>
+
 </div>
 <!-- Content Area -->
 <div class="content-area">
@@ -166,5 +234,6 @@
         sidebar.classList.toggle('show');
     }
 </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
