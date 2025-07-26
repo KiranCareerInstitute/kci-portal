@@ -3,24 +3,23 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/student-layout-doubt}">
 
+<!-- Override title fragment if defined in your layout -->
 <head layout:fragment="title">
     <title>Submit Your Doubt</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- MOBILE FRIENDLY -->
 </head>
 
+<!-- Main content fragment -->
 <section layout:fragment="content">
     <div class="container mt-4">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow border-0">
             <div class="card-header bg-primary text-white text-center">
-                <h5 class="mb-0">
-                    <i class="bi bi-upload me-2"></i>Submit Your Doubt
-                </h5>
+                <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Submit Your Doubt</h5>
             </div>
 
             <div class="card-body">
                 <!-- Flash Messages -->
                 <div th:if="${success}" class="alert alert-success text-center mb-3" th:text="${success}"></div>
-                <div th:if="${error}" class="alert alert-danger text-center mb-3" th:text="${error}"></div>
+                <div th:if="${error}"   class="alert alert-danger  text-center mb-3" th:text="${error}"></div>
 
                 <!-- Upload Form -->
                 <form th:action="@{/student/doubts/upload}" method="post" enctype="multipart/form-data">
@@ -43,19 +42,22 @@
                         <div class="form-text">Accepted formats: JPG, PNG, PDF</div>
                     </div>
 
-                    <!-- Responsive Buttons -->
-                    <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mt-3">
-                        <a th:href="@{/dashboard}" class="btn btn-secondary w-100 w-md-auto">
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/dashboard}" class="btn btn-secondary">
                             <i class="bi bi-house-door"></i> Dashboard
                         </a>
-                        <a th:href="@{/student/doubts/my}" class="btn btn-outline-secondary w-100 w-md-auto">
+                        <a th:href="@{/student/doubts/my}" class="btn btn-outline-secondary">
                             <i class="bi bi-folder2-open"></i> My Doubts
                         </a>
-                        <button type="submit" class="btn btn-success w-100 w-md-auto">
+                        <button type="submit" class="btn btn-success">
                             <i class="bi bi-send-check-fill"></i> Submit Doubt
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <div class="card-footer text-center text-muted small">
+                &copy; 2025 Kiran Career Institute. All rights reserved.
             </div>
         </div>
     </div>
