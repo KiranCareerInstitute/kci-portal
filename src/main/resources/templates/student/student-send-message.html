@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>Upload Assignments</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+<!-- Admin Flash Notice -->
+    <div th:if="${user.flashNotice != null}" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <span th:text="${user.flashNotice}"></span>
+        <form th:action="@{/clear-notice}" method="post" style="display:inline;">
+            <button type="submit" class="btn-close"></button>
+        </form>
+    </div>
+
+    <!-- Ask a Tutor Form -->
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">📨 Ask a Tutor</h3>
+
+        <form th:action="@{/student/chat/send}" method="post">
+            <div class="mb-3">
+                <label for="receiverEmail" class="form-label">Select Tutor Email</label>
+                <select name="receiverEmail" class="form-select" required>
+                    <option value="">-- Select Tutor --</option>
+                    <option th:each="tutor : ${tutors}" th:value="${tutor.email}" th:text="${tutor.email}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="message" class="form-label">Your Message</label>
+                <textarea class="form-control" name="message" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+
+        <div th:if="${success}" class="alert alert-success mt-3" th:text="${success}">✅ Message sent successfully!</div>
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}">❌ Error occurred.</div>
+    </div>
+</div>
+</section>
+</body>
+</html>

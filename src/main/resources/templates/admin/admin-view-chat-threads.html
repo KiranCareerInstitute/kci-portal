@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Student Chat Threads</title>
+    <style>
+        .card { border-radius: 1.2rem; }
+        .table thead th { vertical-align: middle; }
+        .table td, .table th { vertical-align: middle !important; }
+        .badge.bg-success { background: #28a745 !important; }
+        .badge.bg-danger { background: #dc3545 !important; }
+        .table-actions .btn { min-width: 92px; }
+        .table-actions form { display: inline; }
+        .shadow-card { box-shadow: 0 2px 18px 0 rgba(32,49,86,.07) !important; }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container-xl py-5">
+
+        <div class="mb-4">
+            <h2 class="fw-bold text-center mb-2" style="color:#1158c7;">
+                <i class="bi bi-people-fill me-2"></i>Student Chat Threads
+            </h2>
+            <p class="text-center text-muted mb-4" style="font-size:1.05rem">
+                Manage student chat access and view conversations
+            </p>
+        </div>
+
+        <div class="card shadow-card border-0 mb-4">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                    <tr>
+                        <th class="text-center" style="width: 4%;">#</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th class="text-center" style="width: 12%;">Chat Status</th>
+                        <th class="text-center" style="width: 18%;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="student, iter : ${students}">
+                        <td class="text-center" th:text="${iter.index + 1}"></td>
+                        <td th:text="${student.fullName}"></td>
+                        <td th:text="${student.email}"></td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill px-3 py-2"
+                                  th:text="${student.restrictedFromChat ? 'Restricted' : 'Allowed'}"
+                                  th:classappend="${student.restrictedFromChat} ? 'bg-danger' : 'bg-success'">
+                            </span>
+                        </td>
+                        <td class="text-center table-actions">
+                            <!-- View Button -->
+                            <a th:href="@{'/admin/chat/threads/' + ${student.email}}"
+                               class="btn btn-outline-primary btn-sm me-1 px-3">
+                                <i class="bi bi-chat-dots"></i> View
+                            </a>
+                            <!-- Restrict/Unrestrict Button -->
+                            <form th:action="@{'/admin/chat/' + (${student.restrictedFromChat} ? 'unrestrict' : 'restrict') + '/' + ${student.email}}"
+                                  method="post">
+                                <button type="submit"
+                                        th:text="${student.restrictedFromChat} ? 'Unrestrict' : 'Restrict'"
+                                        th:classappend="${student.restrictedFromChat} ? 'btn-success' : 'btn-warning'"
+                                        class="btn btn-sm px-3">
+                                    Restrict
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(students)}">
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <span style="font-size:2rem;">❌</span><br>No chat threads found.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/admin/dashboard" class="btn btn-outline-secondary px-4 py-2">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

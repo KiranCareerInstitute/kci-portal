@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>My Chat History</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Filter Panel -->
+    <div class="container py-4">
+        <h3 class="mb-4 text-primary text-center">📜 My Tutor Chat History</h3>
+        <form class="row g-2 align-items-end mb-4 bg-light rounded-3 p-3 shadow-sm" method="get" th:action="@{/student/chat/history}">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Tutor</label>
+                <select name="tutorEmail" class="form-select">
+                    <option value="">-- All Tutors --</option>
+                    <option th:each="tutor : ${tutors}"
+                            th:value="${tutor}"
+                            th:text="${tutor}"
+                            th:selected="${tutor} == ${selectedTutor}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Keyword</label>
+                <input type="text" name="keyword" class="form-control"
+                       placeholder="Search messages or replies..."
+                       th:value="${keyword}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">From</label>
+                <input type="date" name="fromDate" class="form-control"
+                       th:value="${fromDate != null ? fromDate : ''}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">To</label>
+                <input type="date" name="toDate" class="form-control"
+                       th:value="${toDate != null ? toDate : ''}">
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">🔍 Filter</button>
+                <a th:href="@{/student/chat/history}" class="btn btn-outline-secondary w-100">Reset</a>
+            </div>
+        </form>
+
+        <!-- Chat History Table -->
+        <div class="bg-white rounded shadow-sm p-3">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th class="text-center">Tutor</th>
+                    <th>Message</th>
+                    <th>Reply</th>
+                    <th class="text-center">Sent At</th>
+                    <th class="text-center">Replied At</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="msg : ${messages}">
+                    <td class="text-center" th:text="${msg.receiverEmail}"></td>
+                    <td>
+                        <span th:text="${msg.message}"></span>
+                        <a th:if="${msg.fileName != null}" th:href="@{/student/chat/download/{id}(id=${msg.id})}"
+                           class="ms-2 link-underline link-underline-opacity-0 text-primary" title="Download Attachment">
+                            <i class="bi bi-paperclip"></i> <span th:text="${msg.fileName}"></span>
+                        </a>
+                    </td>
+                    <td th:text="${msg.reply != null ? msg.reply : '—'}"></td>
+                    <td class="text-center" th:text="${msg.sentAt != null ? #temporals.format(msg.sentAt, 'dd MMM yyyy HH:mm') : '—'}"></td>
+                    <td class="text-center" th:text="${msg.repliedAt != null ? #temporals.format(msg.repliedAt, 'dd MMM yyyy HH:mm') : '—'}"></td>
+                </tr>
+                <tr th:if="${messages == null or #lists.isEmpty(messages)}">
+                    <td colspan="5" class="text-center text-muted py-4">No chat history found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

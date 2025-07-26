@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>Review Student Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+        <!-- Title -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0 text-primary"><i class="bi bi-chat-dots me-2"></i>Tutor Chat History</h3>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="get" th:action="@{/tutor/chat/history}" class="row g-2 mb-4">
+            <div class="col-md-4">
+                <select name="studentEmail" class="form-select">
+                    <option value="">🔍 All Students</option>
+                    <option th:each="email : ${studentEmails}"
+                            th:value="${email}"
+                            th:selected="${selectedStudent == email}"
+                            th:text="${email}">Student</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+
+        <!-- Empty Alert -->
+        <div th:if="${messages.empty}" class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No replied messages found.
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle bg-white rounded" th:if="${!messages.empty}">
+                <thead class="table-light">
+                <tr class="align-middle text-center">
+                    <th>Student</th>
+                    <th>Message</th>
+                    <th>Attachment</th>
+                    <th>Reply</th>
+                    <th>Sent At</th>
+                    <th>Replied At</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="msg : ${messages}">
+                    <td class="text-break" th:text="${msg.senderEmail}">student@email.com</td>
+                    <td class="text-break" th:text="${msg.message}">Message</td>
+                    <td>
+                        <a th:if="${msg.fileName != null}"
+                           th:href="@{'/files/' + ${msg.fileName}}"
+                           th:text="${msg.fileName}"
+                           class="badge bg-info-subtle text-dark text-wrap"
+                           target="_blank">
+                        </a>
+                        <span th:if="${msg.fileName == null}" class="text-muted">—</span>
+                    </td>
+                    <td class="text-break" th:text="${msg.reply}">Reply</td>
+                    <td th:text="${#temporals.format(msg.sentAt, 'dd MMM yyyy HH:mm')}"></td>
+                    <td th:text="${#temporals.format(msg.repliedAt, 'dd MMM yyyy HH:mm')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

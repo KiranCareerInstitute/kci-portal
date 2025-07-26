@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <section layout:fragment="content">
+
+    <div class="main-card">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+        <span class="results-header">
+            <i class="bi bi-list-columns-reverse me-2"></i>View Student Results
+        </span>
+            <a href="/admin/results/export/pdf" class="btn btn-outline-primary export-btn">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+            </a>
+        </header>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th style="width: 4%;">#</th>
+                    <th style="width: 18%;">Student Name</th>
+                    <th style="width: 17%;">Email</th>
+                    <th style="width: 13%;">Module</th>
+                    <th style="width: 16%;">Test</th>
+                    <th style="width: 8%;">Score</th>
+                    <th style="width: 9%;">Status</th>
+                    <th style="width: 15%;">Date Taken</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result, iterStat : ${results}">
+                    <td th:text="${iterStat.index + 1}"></td>
+                    <td th:text="${result.user != null ? result.user.fullName : 'User Deleted'}"></td>
+                    <td th:text="${result.user != null ? result.user.email : 'N/A'}"></td>
+                    <td th:text="${result.moduleTitle}"></td>
+                    <td th:text="${result.testName}"></td>
+                    <td th:text="${result.score}"></td>
+                    <td>
+                    <span th:text="${result.passed ? 'Passed' : 'Failed'}"
+                          th:classappend="${result.passed} ? 'status-badge status-pass' : 'status-badge status-fail'"></span>
+                    </td>
+                    <td th:text="${result.dateTaken}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(results)}">
+                    <td colspan="8" class="text-center text-muted py-4">No results found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

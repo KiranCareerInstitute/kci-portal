@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <!-- Dashboard Stats -->
+    <div class="container mt-5">
+        <div class="row g-4">
+
+            <!-- Summary Cards -->
+            <div class="col-md-4">
+                <div class="card text-bg-primary shadow-sm border-0 text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Total Users</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalUsers}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-bg-success shadow-sm border-0 text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Total Modules</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalModules}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-bg-dark shadow-sm border-0 text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Total Assignments</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalAssignments}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-6">
+                <div class="card text-white bg-warning shadow-sm text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Pending Review</h6>
+                        <h3 class="fw-bold mb-0" th:text="${pendingAssignments}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-6">
+                <div class="card text-white bg-info shadow-sm text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Reviewed Assignments</h6>
+                        <h3 class="fw-bold mb-0" th:text="${reviewedAssignments}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-6">
+                <div class="card text-white bg-danger shadow-sm text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Pending Doubts</h6>
+                        <h3 class="fw-bold mb-0" th:text="${pendingDoubts}">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-6">
+                <div class="card text-white bg-secondary shadow-sm text-center">
+                    <div class="card-body">
+                        <h6 class="text-uppercase">Video Solutions</h6>
+                        <h3 class="fw-bold mb-0" th:text="${totalVideos}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4 mt-4">
+
+            <!-- Admin Management Panels -->
+            <div class="row g-4 mt-4">
+                <div class="col-md-4">
+                    <div class="card border-start border-info border-4 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-info mb-2"><i class="bi bi-clipboard-check me-1"></i> Manage Assignments</h6>
+                            <p class="text-muted">Create, view, and review student assignments.</p>
+                            <a href="/admin/assignments" class="btn btn-outline-info btn-sm">Go to Assignments</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-start border-warning border-4 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-warning mb-2"><i class="bi bi-question-circle me-1"></i> Manage Doubts</h6>
+                            <p class="text-muted">Resolve and provide feedback on student doubts.</p>
+                            <a href="/admin/doubts" class="btn btn-outline-warning btn-sm">View Doubts</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-start border-primary border-4 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-primary mb-2"><i class="bi bi-file-earmark-text me-1"></i> Manage Tests</h6>
+                            <p class="text-muted">Upload, manage, and check student test results.</p>
+                            <a href="/admin/tests" class="btn btn-outline-primary btn-sm">Manage Tests</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-start border-success border-4 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-success mb-2"><i class="bi bi-camera-video me-1"></i> Video Solutions</h6>
+                            <p class="text-muted">Upload or review solution videos.</p>
+                            <a href="/admin/videos" class="btn btn-outline-success btn-sm">Video Solutions</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-start border-secondary border-4 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-secondary mb-2"><i class="bi bi-chat-dots me-1"></i> Chat with Students</h6>
+                            <p class="text-muted">Respond to student queries in real-time.</p>
+                            <a href="/admin/chat" class="btn btn-outline-secondary btn-sm">Open Chat</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-start border-danger border-4 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-danger mb-2"><i class="bi bi-star me-1"></i> Feedback Sessions</h6>
+                            <p class="text-muted">Review student feedback and ratings.</p>
+                            <a href="/admin/feedback" class="btn btn-outline-danger btn-sm">Check Feedback</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border border-success shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="text-success text-uppercase mb-2">
+                            <i class="bi bi-upload me-1"></i> Upload Results
+                        </h6>
+                        <p class="text-muted">Add scores and feedback for students.</p>
+                        <a href="/admin/results/upload" class="btn btn-sm btn-success">
+                            <i class="bi bi-pencil-square me-1"></i> Upload Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border border-info shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="text-info text-uppercase mb-2">
+                            <i class="bi bi-card-list me-1"></i> View Results
+                        </h6>
+                        <p class="text-muted">Check submitted scores and reviews.</p>
+                        <a href="/admin/results" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye me-1"></i> View All
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+</body>
+</html>

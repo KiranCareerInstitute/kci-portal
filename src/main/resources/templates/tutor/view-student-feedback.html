@@ -1,0 +1,77 @@
+<!-- templates/tutor-doubt-review.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>Review Student Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card shadow border-0 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">📝 Student Feedback Review</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Session Info -->
+                        <div class="mb-3">
+                            <span class="badge bg-secondary me-2">
+                                <strong>Student:</strong> <span th:text="${slot.studentEmail}"></span>
+                            </span>
+                            <span class="badge bg-light text-dark me-2">
+                                <strong>Date:</strong> <span th:text="${slot.date}"></span>
+                            </span>
+                            <span class="badge bg-light text-dark">
+                                <strong>Time:</strong> <span th:text="${slot.startTime} + ' - ' + ${slot.endTime}"></span>
+                            </span>
+                        </div>
+
+                        <!-- No Feedback Case -->
+                        <div th:if="${noFeedback}" class="alert alert-warning">
+                            ❗ No feedback submitted by the student yet.
+                        </div>
+
+                        <!-- Feedback Display -->
+                        <div th:if="${feedback != null}">
+                            <div class="mb-4">
+                                <label class="fw-semibold text-success"><strong>🧑‍🎓 Student Feedback:</strong></label>
+                                <div class="p-3 border bg-light rounded mb-3" th:text="${feedback.feedbackText}"></div>
+                            </div>
+
+                            <!-- Tutor Reply (if already replied) -->
+                            <div th:if="${feedback.tutorReplyText != null}">
+                                <label class="fw-semibold text-primary"><strong>📩 Your Reply:</strong></label>
+                                <div class="p-3 border bg-white rounded shadow-sm mb-3" th:text="${feedback.tutorReplyText}"></div>
+                            </div>
+
+                            <!-- Reply Form (if not yet replied) -->
+                            <div th:if="${feedback.tutorReplyText == null}">
+                                <form th:action="@{'/tutor/feedback/reply-feedback/' + ${slot.id}}" method="post" autocomplete="off">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">✍️ Reply to Student <span class="text-danger">*</span></label>
+                                        <textarea name="tutorReplyText" class="form-control" rows="4" required placeholder="Write your reply to the student..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        📨 Send Reply
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white text-end">
+                        <a href="/tutor/my-slots" class="btn btn-outline-secondary">⬅ Back to My Slots</a>
+                    </div>
+                </div>
+                <div class="text-center text-muted small mb-2">
+                    &copy; 2025 Kiran Career Institute. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

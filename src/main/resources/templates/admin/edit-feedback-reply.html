@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Edit Tutor Reply</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-5" style="max-width: 700px;">
+
+        <h3 class="mb-4 text-primary">
+            <i class="bi bi-pencil-square"></i> Edit Tutor Reply to Student Feedback
+        </h3>
+
+        <!-- Success Alert -->
+        <div th:if="${param.success}" class="alert alert-success d-flex align-items-center" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            Reply updated successfully!
+        </div>
+
+        <!-- Session/Feedback Info -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="mb-2"><strong>Student:</strong> <span th:text="${slot.studentEmail}">student@domain.com</span></div>
+                <div class="mb-2"><strong>Tutor:</strong> <span th:text="${slot.tutorEmail}">tutor@domain.com</span></div>
+                <div><strong>Date:</strong> <span th:text="${slot.date}">yyyy-mm-dd</span></div>
+            </div>
+        </div>
+
+        <!-- Student Feedback -->
+        <div class="mb-3">
+            <label class="fw-semibold mb-1">🧑‍🎓 Student Feedback:</label>
+            <div class="form-control bg-light" style="min-height:70px;" th:text="${feedback.feedbackText}">
+                Student feedback goes here...
+            </div>
+        </div>
+
+        <!-- Edit Tutor Reply Form -->
+        <form th:action="@{'/admin/feedback/edit-reply/' + ${slot.id}}" method="post" autocomplete="off">
+            <div class="mb-3">
+                <label class="fw-semibold mb-1">✍️ Tutor Reply</label>
+                <textarea name="tutorReplyText"
+                          class="form-control"
+                          rows="5"
+                          placeholder="Write your reply here..."
+                          th:text="${feedback.tutorReplyText}"
+                          required></textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save me-1"></i> Save Changes
+                </button>
+                <a th:href="@{'/admin/feedback/view/' + ${slot.id}}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
+        </form>
+
+    </div>
+</section>
+</body>
+</html>

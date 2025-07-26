@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>My Practice Test</title>
+</head>
+<body>
+<section layout:fragment="content" class="container py-4">
+
+    <!-- Page Heading -->
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-clipboard-check fs-4 me-2"></i>
+        <h4 class="m-0">Available Practice Tests &amp; Exams</h4>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-danger"  role="alert" th:text="${error}"></div>
+
+    <!-- My Submissions Button -->
+    <div class="mb-3">
+        <a href="/student/tests/submissions" class="btn btn-outline-primary">
+            <i class="bi bi-inbox me-1"></i>
+            View My Submissions
+        </a>
+    </div>
+
+    <!-- Tests Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle mb-0">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Type</th>
+                <th scope="col">Uploaded On</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="test, iter : ${tests}">
+                <td th:text="${iter.count}">1</td>
+                <td th:text="${test.title}">Test Title</td>
+                <td th:text="${test.description}">Description</td>
+                <td>
+                            <span th:if="${test.type == 'practice'}" class="badge bg-primary">
+                                Practice
+                            </span>
+                    <span th:if="${test.type == 'exam'}" class="badge bg-danger">
+                                Exam
+                            </span>
+                </td>
+                <td th:text="${#temporals.format(test.createdAt, 'dd-MM-yyyy HH:mm')}">
+                    01-07-2025 14:00
+                </td>
+                <td class="text-nowrap">
+                    <a th:href="@{'/uploads/test_submissions/' + ${test.pdfPath}}"
+                       class="btn btn-sm btn-success"
+                       target="_blank"
+                       title="View PDF">
+                        <i class="bi bi-file-earmark-pdf"></i>Test Paper
+                    </a>
+
+
+                    <a th:href="@{'/student/tests/submit/' + ${test.id}}"
+                       class="btn btn-sm btn-primary ms-2"
+                       title="Submit Test">
+                        <i class="bi bi-upload"></i>Submit Test Answer
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+<!-- Bootstrap client-side form validation (if you have any forms) -->
+<script>
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+
+<head layout:fragment="title">
+    <title>Submit Your Doubt</title>
+</head>
+
+<section layout:fragment="content">
+    <div class="container mt-4">
+        <h3>📝 Feedback to Tutor</h3>
+
+        <!-- Success message -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{'/student/feedback/submit/' + ${slot.id}}" th:object="${feedback}" method="post">
+            <div class="mb-3">
+                <label class="form-label">Your Feedback</label>
+                <textarea class="form-control" th:field="*{feedbackText}" rows="5" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit Feedback</button>
+            <a href="/student/book-session" class="btn btn-secondary ms-2">Back</a>
+        </form>
+    </div>
+    <div class="card-footer text-center text-muted small">
+        &copy; 2025 Kiran Career Institute. All rights reserved.
+    </div>
+</section>
+</html>

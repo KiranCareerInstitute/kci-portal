@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>My Video Solutions</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="container mt-4">
+        <h2 class="mb-4">📚 Available Tutor Slots</h2>
+
+        <!-- Alert: No available slots -->
+        <div th:if="${slots.size() == 0}">
+            <div class="alert alert-warning">No available slots right now. Please check back later.</div>
+        </div>
+
+        <!-- Table: Available slots -->
+        <table class="table table-hover" th:if="${slots.size() > 0}">
+            <thead class="table-light">
+            <tr>
+                <th>Tutor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="slot : ${slots}">
+                <td th:text="${slot.tutorEmail}">Tutor Email</td>
+                <td th:text="${slot.date}">Date</td>
+                <td th:text="${slot.startTime + ' - ' + slot.endTime}">Time</td>
+                <td>
+                    <form th:action="@{/student/book-session/{id}(id=${slot.id})}" method="post">
+                        <button type="submit" class="btn btn-success btn-sm">📅 Book</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Alert: Booking confirmation -->
+        <div th:if="${param.booked}">
+            <div class="alert alert-success mt-4">
+                ✅ Session booked successfully! You can start chat below.
+            </div>
+        </div>
+
+        <hr class="my-5"/>
+
+        <!-- Booked sessions -->
+        <h3 class="mb-4">✅ My Booked Sessions</h3>
+
+        <!-- Alert: No booked sessions -->
+        <div th:if="${bookedSlots.size() == 0}">
+            <div class="alert alert-info">You have no booked sessions yet.</div>
+        </div>
+
+        <!-- Table: Booked slots -->
+        <table class="table table-striped" th:if="${bookedSlots.size() > 0}">
+            <thead class="table-light">
+            <tr>
+                <th>Tutor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Chat</th>
+                <th>Live Class Link</th>
+                <th>Tutor Feedback</th>
+                <th>Submit your Feedback</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="slot : ${bookedSlots}">
+                <td th:text="${slot.tutorEmail}">Tutor Email</td>
+                <td th:text="${slot.date}">Date</td>
+                <td th:text="${slot.startTime + ' - ' + slot.endTime}">Time</td>
+                <td>
+                    <a th:href="@{'/chat/session/' + ${#authentication.name} + '/' + ${slot.tutorEmail}}"
+                       class="btn btn-primary btn-sm">💬 Chat</a>
+                </td>
+                <td>
+                    <a th:if="${slot.meetingLink}" th:href="${slot.meetingLink}"
+                       class="btn btn-success btn-sm" target="_blank">🎥 Join Video</a>
+                </td>
+                <td>
+                    <a th:href="@{'/student/feedback/' + ${slot.id}}"
+                       class="btn btn-info btn-sm">📋 Feedback</a>
+                </td>
+                <td>
+                    <a th:href="@{'/student/feedback/submit/' + ${slot.id}}"
+                       class="btn btn-outline-info btn-sm">✏️ Give Feedback</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a href="/dashboard" class="btn btn-secondary mt-3">⬅️ Back to Dashboard</a>
+    </div>
+    </div>
+
+    <!-- Bootstrap client-side form validation -->
+    <script>
+        (function () {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+
+</section>
+</body>
+</html>

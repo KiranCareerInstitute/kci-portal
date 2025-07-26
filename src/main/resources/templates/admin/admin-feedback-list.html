@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Review Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+    <h3>🗂️ All Session Feedbacks</h3>
+
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+        <tr>
+            <th>Session</th>
+            <th>Submitted By</th>
+            <th>Student</th>
+            <th>Tutor</th>
+            <th>Feedback</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="feedback : ${feedbackList}">
+            <td th:text="${feedback.sessionSlot.id}"></td>
+            <td th:text="${feedback.submittedBy}"></td>
+            <td th:text="${feedback.studentEmail}"></td>
+            <td th:text="${feedback.tutorEmail}"></td>
+            <td th:text="${#strings.abbreviate(feedback.feedbackText, 50)}"></td>
+            <td>
+                <a th:href="@{'/admin/feedback/view/' + ${feedback.sessionSlot.id}}" class="btn btn-sm btn-info">👁️
+                    View</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/admin/dashboard" class="btn btn-secondary mt-3">⬅️ Back</a>
+</div>
+</section>
+</body>
+</html>

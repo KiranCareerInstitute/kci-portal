@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>My Scheduled Slots</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+        <h2>📝 Submit Feedback</h2>
+
+        <!-- Success message -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{'/tutor/feedback/' + ${slot.id}}" method="post" enctype="multipart/form-data"
+              th:object="${feedback}">
+            <div class="mb-3">
+                <label class="form-label">Student Email</label>
+                <input type="text" class="form-control" th:value="${slot.studentEmail}" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Feedback Text</label>
+                <textarea class="form-control" th:field="*{feedbackText}" rows="5" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Attachment (PDF/IMG)</label>
+                <input type="file" class="form-control" name="file" accept=".pdf,.png,.jpg,.jpeg">
+            </div>
+
+            <button type="submit" class="btn btn-primary">✅ Submit</button>
+            <a href="/tutor/my-slots" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
+</section>
+</body>
+</html>

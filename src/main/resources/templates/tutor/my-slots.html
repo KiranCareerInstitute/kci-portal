@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>My Scheduled Slots</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center">📅 My Scheduled Slots</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle shadow-sm rounded">
+                <thead class="table-primary text-center">
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Booked By</th>
+                    <th>Chat</th>
+                    <th>Meeting Link</th>
+                    <th>Submit Feedback</th>
+                    <th>View Student Feedback</th>
+                    <th>Session Downloads</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="slot : ${mySlots}">
+                    <td class="text-nowrap text-center" th:text="${slot.date}"></td>
+                    <td class="text-nowrap text-center" th:text="${slot.startTime} + ' - ' + ${slot.endTime}"></td>
+                    <td class="text-center">
+                        <span th:if="${slot.booked}" class="badge bg-danger px-3 py-2">Booked</span>
+                        <span th:unless="${slot.booked}" class="badge bg-success px-3 py-2">Available</span>
+                    </td>
+                    <td class="text-center" th:text="${slot.studentEmail != null ? slot.studentEmail : '-'}"></td>
+                    <td class="text-center">
+                        <a th:if="${slot.booked}"
+                           th:href="@{'/chat/session/' + ${slot.studentEmail} + '/' + ${#authentication.name}}"
+                           class="btn btn-primary btn-sm" title="Chat with Student">💬 Chat</a>
+                        <span th:unless="${slot.booked}" class="text-muted">-</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:if="${slot.meetingLink}"
+                           th:href="${slot.meetingLink}"
+                           class="btn btn-outline-secondary btn-sm"
+                           target="_blank" title="Open Meeting Link">🔗 Link</a>
+                        <span th:unless="${slot.meetingLink}" class="text-muted">-</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:if="${slot.booked}"
+                           th:href="@{'/tutor/feedback/' + ${slot.id}}"
+                           class="btn btn-warning btn-sm" title="Submit Feedback">✍️ Feedback</a>
+                        <span th:unless="${slot.booked}" class="text-muted">-</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:if="${slot.booked}"
+                           th:href="@{'/tutor/feedback/view-student/' + ${slot.id}}"
+                           class="btn btn-info btn-sm" title="View Student Feedback">🧾 Feedback</a>
+                        <span th:unless="${slot.booked}" class="text-muted">-</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:if="${slot.booked}"
+                           th:href="@{'/tutor/feedback/download/' + ${slot.id}}"
+                           class="btn btn-outline-secondary btn-sm" title="Download Session PDF">📥 PDF</a>
+                        <span th:unless="${slot.booked}" class="text-muted">-</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-center">
+            <a href="/tutor/availability" class="btn btn-secondary mt-3">⬅️ Add Availabiity</a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

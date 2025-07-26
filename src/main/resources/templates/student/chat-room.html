@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>My Chat History</title>
+    <style>
+        .chat-box {
+            max-width: 650px;
+            margin: 0 auto 2rem auto;
+            background: #f6f8fa;
+            border-radius: 1rem;
+            padding: 2rem 1rem;
+            min-height: 300px;
+            box-shadow: 0 4px 32px rgba(60,60,60,0.06);
+        }
+        .chat-msg {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.3rem;
+            border-radius: 1rem;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            word-break: break-word;
+            transition: background 0.2s;
+        }
+        .msg-left {
+            background: #ffffff;
+            align-self: flex-start;
+            border-bottom-left-radius: 0.2rem;
+        }
+        .msg-right {
+            background: #e0e9ff;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.2rem;
+        }
+        .chat-msg strong {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 0.2rem;
+        }
+        .chat-msg span {
+            font-size: 1.08rem;
+            color: #222;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .chat-msg small {
+            font-size: 0.85rem;
+            color: #7a899a;
+        }
+        .chat-msg a {
+            color: #2d5be3;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .chat-msg a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .chat-box { padding: 1rem 0.3rem; }
+            .chat-msg { max-width: 90%; padding: 0.8rem 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <h2 class="mb-4 text-center fw-bold">Chat Room <span aria-label="Chat">🗨️</span></h2>
+
+    <div class="chat-box mb-4">
+        <div th:each="msg : ${messages}"
+             class="chat-msg"
+             th:classappend="${msg.senderEmail == studentEmail} ? 'msg-left' : 'msg-right'">
+            <strong th:text="${msg.senderEmail == studentEmail ? 'Student:' : 'Tutor:'}"></strong>
+            <span th:text="${msg.message}"></span>
+            <small th:text="${#temporals.format(msg.sentAt, 'dd MMM yyyy HH:mm')}"></small>
+            <div th:if="${msg.filePath != null}">
+                <span class="me-1" style="font-size:1.2em;">📎</span>
+                <a th:href="@{/uploads/chat/{file}(file=${msg.filePath})}"
+                   target="_blank" th:text="${msg.fileName}">Download</a>
+            </div>
+        </div>
+        <div th:if="${messages.empty}" class="text-center text-muted pt-5">
+            No messages found.
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="javascript:history.back()" class="btn btn-secondary px-4">
+            ⬅️ Back
+        </a>
+    </div>
+</section>
+</body>
+</html>

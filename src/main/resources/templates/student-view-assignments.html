@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout}">
+<head>
+    <title>View Assignments</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="mt-4">
+        <h4>My Submitted Assignments</h4>
+
+        <table class="table table-bordered table-striped mt-3">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>File</th>
+                <th>Feedback</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="assignment : ${assignments}">
+                <td th:text="${assignment.id}">1</td>
+                <td th:text="${assignment.title}">Math</td>
+                <td th:text="${assignment.description}">Algebra</td>
+                <td>
+                    <a th:href="@{'/uploads/assignment/' + ${assignment.filePath}}" target="_blank" download>Download</a>
+                </td>
+                <td>
+                    <a th:href="@{'/student/assignment/feedback/' + ${assignment.id}}"
+                       class="btn btn-sm btn-outline-info">
+                        View Feedback
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(assignments)}">
+                <td colspan="5" class="text-center text-muted">No assignments submitted yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

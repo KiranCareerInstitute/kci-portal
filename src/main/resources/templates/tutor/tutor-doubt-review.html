@@ -1,0 +1,82 @@
+<!-- templates/tutor-doubt-review.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>Review Student Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container-fluid mt-4">
+
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="text-primary">
+                <i class="bi bi-journal-check me-2"></i> Review Student Doubt
+            </h3>
+        </div>
+
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success text-center" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}"></div>
+
+        <!-- Doubt Card -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+
+                <!-- Student Info -->
+                <h5 class="mb-3">
+                    <i class="bi bi-person-circle me-2"></i>
+                    <span th:text="${doubt.studentEmail}"></span>
+                </h5>
+
+                <p><strong>📘 Subject:</strong> <span th:text="${doubt.subject}"></span></p>
+                <p><strong>📝 Description:</strong> <span th:text="${doubt.description}"></span></p>
+                <p><strong>🕒 Submitted:</strong>
+                    <span th:text="${#temporals.format(doubt.submittedAt, 'dd MMM yyyy HH:mm')}"></span>
+                </p>
+
+                <p>
+                    <strong>📎 Attached File:</strong>
+                    <a th:href="@{'/uploads/' + ${doubt.filePath}}" target="_blank"
+                       class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-download me-1"></i> View / Download
+                    </a>
+                </p>
+
+                <!-- Review Form -->
+                <form th:action="@{'/tutor/doubts/review/' + ${doubt.id}}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="mt-4">
+
+                    <div class="mb-3">
+                        <label class="form-label"><strong>💬 Feedback</strong></label>
+                        <textarea name="feedback" class="form-control" rows="4"
+                                  placeholder="Enter your detailed feedback..." required></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label"><strong>📤 Upload Solution File (Optional)</strong></label>
+                        <input type="file" name="solutionFile" class="form-control"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/tutor/doubts}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left-circle me-1"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-check me-1"></i> Submit Feedback
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>Your Courses | KCI Learning</title>
+    <style>
+        body {
+            background: #f7fafc;
+        }
+        .dashboard-header {
+            background: linear-gradient(90deg, #3f7afc 0%, #71e1f5 100%);
+            color: #fff;
+            border-radius: 1.5rem;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 6px 16px rgba(85,120,220,0.09);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .card.h-100 {
+            transition: transform 0.18s, box-shadow 0.18s;
+            border-radius: 1.2rem;
+            overflow: hidden;
+        }
+        .card.h-100:hover {
+            transform: translateY(-6px) scale(1.025);
+            box-shadow: 0 8px 24px rgba(55,140,210,0.14);
+            background: #f4faff;
+        }
+        .card-title {
+            font-weight: 700;
+            color: #2749a6;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #3476fa 0%, #3cd2f3 100%);
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+        .card-footer {
+            background: transparent;
+            border-top: none;
+        }
+        .alert-info {
+            background: #f0f9ff;
+            color: #2587a5;
+            border-radius: 0.8rem;
+        }
+        footer {
+            margin-top: 3rem;
+            font-size: 0.97rem;
+        }
+        @media (max-width: 767px) {
+            .dashboard-header { padding: 1.1rem 0.7rem; font-size: 1.02rem; }
+            .card-title { font-size: 1.09rem; }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="container-xl mt-4 mb-5">
+        <div class="dashboard-header mb-4">
+            <h2 class="fw-bold mb-2">🎓 My Courses</h2>
+            <div>
+                Welcome to your learning dashboard.<br>
+                Explore your enrolled courses, access training materials, and continue your journey at your own pace.
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4" th:if="${modules}">
+            <div class="col" th:each="module : ${modules}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title" th:text="${module.title}">Course Title</h5>
+                        <p class="card-text flex-grow-1" th:text="${module.description}">Course description goes here.</p>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a th:href="@{'/student/module/' + ${module.id}}" class="btn btn-sm btn-primary px-4">
+                            <i class="bi bi-play-circle"></i> Start
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info text-center mt-4" th:if="${#lists.isEmpty(modules)}">
+            <i class="bi bi-info-circle"></i> No courses/modules available at the moment.
+        </div>
+    </div>
+</section>
+</body>
+</html>

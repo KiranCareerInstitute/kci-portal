@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout}">
+<head>
+    <title>View Assignment Feedback</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-5">
+        <!-- Page Title -->
+        <h4 class="mb-4">
+            <i class="bi bi-file-earmark-text me-2"></i>
+            Assignment Feedback & Solution
+        </h4>
+
+        <!-- Assignment Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+
+                <!-- Assignment Title -->
+                <h5 class="card-title" th:text="${assignment.title}">Assignment Title</h5>
+
+                <!-- Assignment Details -->
+                <div class="mb-3">
+                    <!-- Description -->
+                    <p class="mb-1">
+                        <strong>Description:</strong>
+                        <span th:text="${assignment.description}">Description goes here</span>
+                    </p>
+
+                    <!-- Uploaded File -->
+                    <p class="mb-1">
+                        <strong>Uploaded File:</strong>
+                        <a th:href="@{'/uploads/assignment/' + ${assignment.filePath}}"
+                           target="_blank" download>
+                            Download Submission
+                        </a>
+                    </p>
+
+                    <!-- Status -->
+                    <p class="mb-1">
+                        <strong>Status:</strong>
+                        <span th:text="${assignment.status}"
+                              th:classappend="${assignment.status.equals('Reviewed')} ? 'text-success fw-bold' : 'text-warning fw-bold'">
+                            Pending
+                        </span>
+                    </p>
+                </div>
+
+                <hr>
+
+                <!-- Feedback Section -->
+                <h6 class="mt-3">
+                    <i class="bi bi-chat-left-text me-1"></i>
+                    Feedback from Admin
+                </h6>
+                <p th:text="${assignment.feedback != null ? assignment.feedback : 'No feedback provided yet.'}"
+                   class="text-muted fst-italic">
+                    No feedback provided yet.
+                </p>
+
+                <!-- Solution Section -->
+                <h6 class="mt-4">
+                    <i class="bi bi-paperclip me-1"></i>
+                    Solution File
+                </h6>
+
+                <!-- If Solution Exists -->
+                <div th:if="${assignment.solutionPath != null}">
+                    <a th:href="@{'/uploads/assignment/' + ${assignment.solutionPath}}"
+                       class="btn btn-sm btn-outline-primary" target="_blank" download>
+                        <i class="bi bi-download me-1"></i> Download Solution
+                    </a>
+                </div>
+
+                <!-- If No Solution -->
+                <div th:if="${assignment.solutionPath == null}">
+                    <p class="text-muted fst-italic">Solution not uploaded yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="text-center mt-4">
+            <a href="/student/videos" class="btn btn-secondary me-2">
+                <i class="bi bi-camera-video"></i> Video Solutions
+            </a>
+            <a href="/student/assignments" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle me-1"></i> Back to Assignments
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin KCI Edit Training Module</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #1e1e2f;
+            position: fixed;
+            width: 240px;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+        .sidebar h4 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #ced4da;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover,
+        .sidebar a.active,
+        .sidebar a.bg-primary {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .content-wrapper {
+            margin-left: 240px;
+            padding: 30px;
+            min-height: 100vh;
+            background-color: #f4f6f9;
+        }
+        .topbar {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 0.375rem;
+        }
+        .card {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4>KCI Admin</h4>
+    <a th:href="@{/admin/dashboard}" th:classappend="${currentPath == '/admin'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a th:href="@{/admin/users}" th:classappend="${currentPath == '/admin/users'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-people-fill"></i> Users
+    </a>
+    <a th:href="@{/admin/modules}" th:classappend="${currentPath == '/admin/modules'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-journal-richtext"></i> Modules
+    </a>
+    <a th:href="@{/admin/assignments}" th:classappend="${currentPath == '/admin/assignments'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-upload"></i> Assignments
+    </a>
+    <a th:href="@{/admin/queries}" th:classappend="${currentPath == '/admin/queries'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-chat-left-text"></i> Student Queries
+    </a>
+    <a th:href="@{/admin/results/upload}" th:classappend="${currentPath == '/admin/results/upload'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-upload"></i> Upload Result
+    </a>
+    <a th:href="@{/admin/results}" th:classappend="${currentPath == '/admin/results'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-card-list"></i> View Results
+    </a>
+    <a th:href="@{/admin/tests}" th:classappend="${currentPath == '/admin/tests'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-file-earmark-text"></i> Manage Tests
+    </a>
+    <a th:href="@{/admin/review-results}" th:classappend="${currentPath == '/admin/review-results'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-clipboard-check"></i> Review Submissions
+    </a>
+    <a th:href="@{/admin/videos}" th:classappend="${currentPath == '/admin/videos'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-camera-video"></i> Video Solutions
+    </a>
+    <form th:action="@{/logout}" method="post" class="text-center mt-4">
+        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+    </form>
+</div>
+
+<!-- Main Content -->
+<div class="content-wrapper">
+    <div class="topbar d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Edit Training Module</h5>
+    </div>
+
+    <div class="card">
+        <form th:action="@{'/admin/modules/edit/' + ${module.id}}" method="post" th:object="${module}">
+            <div class="mb-3">
+                <label for="title" class="form-label">Module Title</label>
+                <input type="text" th:field="*{title}" class="form-control" id="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Module Description</label>
+                <textarea th:field="*{description}" class="form-control" id="description" rows="4" required></textarea>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a th:href="@{/admin/modules}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <footer class="text-center mt-5 text-muted small">
+        &copy; 2025 Kiran Career Institute. All rights reserved.
+    </footer>
+</div>
+
+</body>
+</html>

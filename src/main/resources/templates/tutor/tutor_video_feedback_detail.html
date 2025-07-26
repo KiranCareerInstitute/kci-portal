@@ -1,0 +1,75 @@
+<!-- templates/tutor-doubt-review.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>Review Student Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="container mt-5">
+        <div class="card shadow rounded-4">
+            <div class="card-body">
+                <h4 class="mb-4 text-success">Feedback for: <span th:text="${video.title}">Title</span></h4>
+
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Student</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Reply</th>
+                        <th>Submitted At</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="f : ${feedbacks}">
+                        <td th:text="${f.student.fullName}">Student Name</td>
+                        <td>
+                            <span th:each="i : ${#numbers.sequence(1, f.rating)}" class="text-warning">&#9733;</span>
+                        </td>
+                        <td th:text="${f.comment}">Comment</td>
+                        <td>
+                            <div th:if="${f.tutorResponse}">
+                                <p class="text-success fw-bold" th:text="${f.tutorResponse}">Response</p>
+                            </div>
+                            <div th:if="${f.tutorResponse == null}">
+                                <form th:action="@{'/tutor/videos/feedback/respond/' + ${f.id}}" method="post">
+                                <textarea name="tutorResponse" class="form-control mb-2" rows="2"
+                                          placeholder="Write your response..." required></textarea>
+                                    <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td th:text="${#temporals.format(f.submittedAt, 'dd-MM-yyyy HH:mm')}">Date</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <a href="/tutor/videos" class="btn btn-secondary mt-3">Back</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional: Bootstrap validation script -->
+    <script>
+        (function () {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+
+</section>
+</body>
+</html>

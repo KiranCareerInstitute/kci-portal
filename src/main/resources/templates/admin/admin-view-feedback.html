@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Review Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="container mt-5">
+    <h3 class="mb-4 text-primary"><i class="bi bi-chat-left-dots"></i> Session Feedback Summary</h3>
+
+    <!-- Session Info -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">🧾 Session Information</h5>
+            <p><strong>Session ID:</strong> <span th:text="${slot.id}"></span></p>
+            <p><strong>Tutor:</strong> <span th:text="${slot.tutorEmail}"></span></p>
+            <p><strong>Student:</strong> <span th:text="${slot.studentEmail}"></span></p>
+            <p><strong>Date:</strong> <span th:text="${slot.date}"></span></p>
+            <p><strong>Time:</strong> <span th:text="${slot.startTime} + ' - ' + ${slot.endTime}"></span></p>
+        </div>
+    </div>
+
+    <!-- No Feedback -->
+    <div th:if="${noFeedback}">
+        <div class="alert alert-warning text-center mt-3">
+            ⚠️ No feedback available for this session.
+        </div>
+    </div>
+
+    <!-- Tutor Feedback -->
+    <div th:if="${tutorFeedback}" class="card">
+        <div class="card-body">
+            <h5 class="card-title">🧑‍🏫 Tutor Feedback</h5>
+            <div class="feedback-box bg-warning-subtle">
+                <p th:text="${tutorFeedback.feedbackText}"></p>
+            </div>
+            <div th:if="${tutorFeedback.attachmentFileName}" class="mt-2">
+                <a th:href="@{'/admin/feedback/download/' + ${slot.id}}"
+                   class="btn btn-outline-primary btn-sm">
+                    📎 Download Attachment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Feedback -->
+    <div th:if="${studentFeedback}" class="card">
+        <div class="card-body">
+            <h5 class="card-title">🧑‍🎓 Student Feedback</h5>
+            <div class="feedback-box bg-light">
+                <p th:text="${studentFeedback.feedbackText}"></p>
+            </div>
+
+            <!-- Tutor's Reply -->
+            <div th:if="${studentFeedback.tutorReplyText}" class="mt-3">
+                <h6 class="text-muted">📩 Tutor's Reply</h6>
+                <div class="feedback-box bg-white shadow-sm">
+                    <p th:text="${studentFeedback.tutorReplyText}"></p>
+                </div>
+
+                <a th:href="@{'/admin/feedback/edit-reply/' + ${slot.id}}"
+                   class="btn btn-outline-warning btn-sm mt-2">
+                    ✏️ Edit Tutor Reply
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Download -->
+    <div th:if="${tutorFeedback}" class="mt-3">
+        <a th:href="@{'/admin/feedback/pdf/' + ${slot.id}}"
+           class="btn btn-outline-danger">
+            🧾 Download PDF Summary
+        </a>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        <a href="/admin/feedback/list" class="btn btn-secondary btn-back">
+            ⬅️ Back to All Feedbacks
+        </a>
+    </div>
+</div>
+</section>
+</body>
+</html>

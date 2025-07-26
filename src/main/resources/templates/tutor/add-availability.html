@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>My Scheduled Slots</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+        <h2 class="mb-4">📅 Add Availability</h2>
+
+        <form th:action="@{/tutor/availability}" th:object="${slot}" method="post">
+            <!-- Date -->
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" th:field="*{date}" required>
+            </div>
+
+            <!-- Time -->
+            <div class="mb-3">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-control" th:field="*{startTime}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-control" th:field="*{endTime}" required>
+            </div>
+
+            <!-- 🔗 Meeting Link -->
+            <div class="mb-3">
+                <label class="form-label">Meeting Link (Optional)</label>
+                <input type="url" class="form-control" th:field="*{meetingLink}" placeholder="https://zoom.us/..." />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Slot</button>
+        </form>
+
+        <div th:if="${param.success}">
+            <div class="alert alert-success mt-3">✅ Slot added successfully!</div>
+        </div>
+        <a href="/tutor/dashboard" class="btn btn-secondary mt-3">⬅️ Back to Dashboard</a>
+    </div>
+</section>
+</body>
+</html>

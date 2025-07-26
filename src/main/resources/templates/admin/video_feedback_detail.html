@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Review Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="container mt-5">
+        <div class="card shadow rounded-4">
+            <div class="card-body">
+                <h4 class="mb-4 text-primary">Feedback Review for Video: <span th:text="${video.title}"></span></h4>
+
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Student</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Tutor Reply</th>
+                        <th>Admin Reply</th>
+                        <th>Submitted</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="f : ${feedbacks}">
+                        <td th:text="${f.student.fullName}"></td>
+                        <td>
+                            <span th:each="i : ${#numbers.sequence(1, f.rating)}" class="text-warning">&#9733;</span>
+                        </td>
+                        <td th:text="${f.comment}"></td>
+                        <td th:text="${f.tutorResponse ?: 'No reply yet'}"></td>
+                        <td>
+                            <div th:if="${f.adminResponse}">
+                                <p class="text-success fw-bold" th:text="${f.adminResponse}"></p>
+                            </div>
+                            <div th:if="${f.adminResponse == null}">
+                                <form th:action="@{'/admin/videos/feedback/respond/' + ${f.id}}" method="post">
+                                <textarea name="adminResponse" class="form-control mb-2" rows="2"
+                                          placeholder="Admin response..." required></textarea>
+                                    <button type="submit" class="btn btn-sm btn-danger">Send Reply</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td th:text="${#temporals.format(f.submittedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <a href="/admin/videos" class="btn btn-secondary mt-3">Back</a>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

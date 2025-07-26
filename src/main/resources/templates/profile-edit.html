@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>Edit Profile</title>
+    <style>
+        body { background: #f6f9ff; }
+        .profile-edit-container {
+            max-width: 600px;
+            margin: 40px auto;
+        }
+        .profile-card {
+            border-radius: 1.2rem;
+            background: #fff;
+            box-shadow: 0 6px 24px rgba(40, 116, 198, 0.09);
+        }
+        .profile-header {
+            background: linear-gradient(90deg, #2874c6 0, #2ec2cf 100%);
+            color: #fff;
+            border-radius: 1.2rem 1.2rem 0 0;
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+        .profile-header i {
+            font-size: 2.6rem;
+        }
+        .profile-header h4 {
+            margin-top: 0.8rem;
+            font-weight: 700;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #2874c6;
+        }
+        .form-control {
+            border-radius: 0.8rem;
+            min-height: 42px;
+        }
+        .edit-btns {
+            gap: 1rem;
+        }
+        .edit-profile-btn {
+            min-width: 130px;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+        @media (max-width: 650px) {
+            .profile-edit-container { margin: 16px; }
+            .profile-header { padding: 1.3rem 0.6rem 1.2rem 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="profile-edit-container">
+        <div class="profile-card shadow-sm border-0">
+
+            <!-- Header -->
+            <div class="profile-header">
+                <i class="bi bi-person-lines-fill"></i>
+                <h4>Edit Your Profile</h4>
+                <div class="small mt-1">Keep your details updated</div>
+            </div>
+
+            <!-- Edit Form -->
+            <div class="p-4">
+                <form th:action="@{/profile/edit}" method="post" th:object="${user}" autocomplete="off">
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="text" th:field="*{fullName}" id="fullName" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile" class="form-label">Mobile Number</label>
+                        <input type="text" th:field="*{mobile}" id="mobile" class="form-control" placeholder="Enter your mobile number" required>
+                    </div>
+                    <!-- Optionally: add other fields here as needed -->
+
+                    <div class="d-flex justify-content-end edit-btns mt-4">
+                        <a th:href="@{/profile}" class="btn btn-outline-secondary edit-profile-btn">
+                            <i class="bi bi-arrow-left me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary edit-profile-btn">
+                            <i class="bi bi-check-circle me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+</section>
+</body>
+</html>

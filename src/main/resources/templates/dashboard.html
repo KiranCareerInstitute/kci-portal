@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <h4 class="mb-4">Quick Access</h4>
+    <div class="dashboard-cards row g-4">
+        <!-- Same cards you had before -->
+        <div class="col-md-3 col-sm-6">
+            <a href="/courses" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-journal-text fs-1 text-dark"></i>
+                        <h5 class="card-title mt-3">Courses</h5>
+                        <p class="card-text text-muted">Browse your courses</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <a href="/student/assignments" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-folder2-open fs-1 text-primary"></i>
+                        <h5 class="card-title mt-3">Assignments</h5>
+                        <p class="card-text text-muted">View & upload assignments</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <a href="/student/doubts/my" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-question-circle fs-1 text-warning"></i>
+                        <h5 class="card-title mt-3">Doubts</h5>
+                        <p class="card-text text-muted">Track your doubts and replies</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <a href="/student/videos" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-camera-reels fs-1 text-danger"></i>
+                        <h5 class="card-title mt-3">Videos</h5>
+                        <p class="card-text text-muted">Watch solution videos</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <a href="/student/tests" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clipboard-check fs-1 text-success"></i>
+                        <h5 class="card-title mt-3">Tests</h5>
+                        <p class="card-text text-muted">Attempt practice tests</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <a href="/student/my-results" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-bar-chart fs-1 text-info"></i>
+                        <h5 class="card-title mt-3">Results</h5>
+                        <p class="card-text text-muted">Check test results</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <a href="/student/chat" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-chat-dots fs-1 text-secondary"></i>
+                        <h5 class="card-title mt-3">Ask Tutor</h5>
+                        <p class="card-text text-muted">Chat with tutors</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <footer class="text-center text-muted small mt-5">
+        &copy; 2025 Kiran Career Institute. All rights reserved.
+    </footer>
+</section>
+</body>
+</html>

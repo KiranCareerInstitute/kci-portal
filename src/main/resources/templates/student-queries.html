@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>My Queries</title>
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .fullpage-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        .queries-container {
+            background: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 32px rgba(30,32,47,0.13);
+            padding: 2.5rem 2.5rem 2rem 2.5rem;
+            width: 100%;
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+        .queries-title {
+            font-size: 2.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #253267;
+        }
+        .queries-desc {
+            color: #8a98b8;
+            font-size: 1.08rem;
+            margin-bottom: 1.7rem;
+        }
+        .table-responsive {
+            margin-top: 1rem;
+        }
+        .table {
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        .table thead th {
+            background: #263163;
+            color: #fff;
+            font-weight: 500;
+            border: none;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f7f9fc;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #e4eafe !important;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+            font-size: 1rem;
+            word-break: break-word;
+        }
+        .pending-text {
+            color: #b1b7c4;
+            font-style: italic;
+        }
+        .empty-row {
+            font-size: 1.14rem;
+            color: #95a1be;
+        }
+        @media (max-width: 1200px) {
+            .queries-container {
+                padding: 2rem 0.6rem 1.5rem 0.6rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .queries-title {
+                font-size: 1.45rem;
+            }
+            .queries-desc {
+                font-size: 0.97rem;
+            }
+            .queries-container {
+                padding: 1rem 0.2rem 0.7rem 0.2rem;
+                border-radius: 0.8rem;
+            }
+            .table th, .table td {
+                font-size: 0.91rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="fullpage-section">
+        <div class="queries-container">
+            <div class="text-center">
+                <div class="queries-title mb-1">My Queries</div>
+                <div class="queries-desc">
+                    View all your submitted questions and the replies from tutors or staff.
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover shadow-sm">
+                    <thead>
+                    <tr>
+                        <th style="width:4%;">#</th>
+                        <th style="width:16%;">Subject</th>
+                        <th style="width:33%;">Question</th>
+                        <th style="width:14%;">Asked On</th>
+                        <th style="width:22%;">Reply</th>
+                        <th style="width:11%;">Replied On</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="query, iterStat : ${queries}">
+                        <td th:text="${iterStat.count}">1</td>
+                        <td th:text="${query.subject}">Math</td>
+                        <td th:text="${query.question}">What is integration?</td>
+                        <td th:text="${#temporals.format(query.submittedAt, 'dd-MM-yyyy HH:mm')}">01-07-2025</td>
+                        <td>
+                            <span th:if="${query.reply != null}" th:text="${query.reply}">Reply Text</span>
+                            <span th:if="${query.reply == null}" class="pending-text">Pending</span>
+                        </td>
+                        <td>
+                            <span th:if="${query.repliedAt != null}" th:text="${#temporals.format(query.repliedAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                            <span th:if="${query.repliedAt == null}" class="pending-text">--</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(queries)}">
+                        <td colspan="6" class="text-center empty-row py-4">
+                            You haven't asked any queries yet.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>User Profile</title>
+    <style>
+        body { background: #f4f9fc; }
+        .profile-header {
+            background: linear-gradient(90deg, #468fff 0%, #2fdabc 100%);
+            border-radius: 1.2rem;
+            margin-bottom: 2.2rem;
+            box-shadow: 0 4px 24px rgba(0,80,200,0.07);
+            padding: 1.8rem 0 5rem 0;
+        }
+        .profile-card {
+            background: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 8px 30px rgba(36,115,217,0.09);
+            max-width: 580px;
+            margin: -90px auto 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        .profile-label { font-weight: 600; color: #4768b4; }
+        .profile-value { color: #20386a; }
+        .badge-role {
+            background: linear-gradient(90deg, #36b88c 0%, #4585ef 100%);
+            color: #fff; font-size: 1rem; font-weight: 600; margin-right: 0.25rem;
+            border-radius: 0.7rem; padding: 0.32em 0.85em; letter-spacing: 0.01em;
+        }
+        .btn-profile-action {
+            min-width: 140px;
+            font-weight: 600;
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            box-shadow: 0 2px 12px #4590ef1a;
+            transition: background 0.16s, color 0.16s, box-shadow 0.18s;
+        }
+        .btn-profile-action:hover {
+            background: #2fdabc;
+            color: #fff;
+            box-shadow: 0 4px 18px #4fd0ff33;
+        }
+        @media (max-width: 600px) {
+            .profile-header { padding: 1.3rem 0 4rem 0; }
+            .profile-card { margin-top: -58px; padding: 1.2rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <!-- Header with Profile Title -->
+    <div class="profile-header d-flex flex-column align-items-center justify-content-center">
+        <h3 class="text-white mb-0" style="font-weight: 700;">
+            <i class="bi bi-person-circle me-2"></i>User Profile
+        </h3>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="profile-card px-4 py-4 shadow-sm">
+        <div class="d-flex flex-column align-items-center mb-4">
+            <i class="bi bi-person-circle text-primary" style="font-size: 3.5rem;"></i>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label profile-label">Full Name:</label>
+            <div class="col-sm-8 pt-1 profile-value" th:text="${user.fullName}">John Doe</div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label profile-label">Email:</label>
+            <div class="col-sm-8 pt-1 profile-value" th:text="${user.email}">john@example.com</div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label profile-label">Mobile:</label>
+            <div class="col-sm-8 pt-1 profile-value" th:text="${user.mobile}">+91-9876543210</div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label profile-label">Roles:</label>
+            <div class="col-sm-8 pt-1">
+            <span class="badge badge-role"
+                  th:each="r : ${user.roles}"
+                  th:text="${r}">ROLE_USER</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-end mt-4 gap-2">
+            <a th:href="@{/profile/edit}" class="btn btn-primary btn-profile-action">
+                <i class="bi bi-pencil-square me-1"></i>Edit Profile
+            </a>
+            <a th:href="@{/profile/change-password}" class="btn btn-outline-primary btn-profile-action">
+                <i class="bi bi-key me-1"></i>Change Password
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

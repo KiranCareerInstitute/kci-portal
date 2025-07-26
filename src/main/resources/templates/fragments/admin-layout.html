@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$TITLE - Admin Panel">Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+        .sidebar {
+            height: 100vh;
+            overflow-y: auto;
+            background-color: #1e1e2f;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            padding-top: 20px;
+            z-index: 1030;
+            transition: all 0.3s ease-in-out;
+            scrollbar-width: thin;
+            scrollbar-color: #495057 #1e1e2f;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: #495057;
+            border-radius: 10px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background-color: #1e1e2f;
+        }
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: block;
+            transition: all 0.2s ease;
+            border-radius: 0 20px 20px 0;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+        .content-area {
+            margin-left: 240px;
+            padding: 30px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .topbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 25px;
+            border-radius: 0.5rem;
+        }
+        footer {
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                width: 200px;
+                left: -200px;
+                height: 100%;
+            }
+            .sidebar.show {
+                left: 0;
+            }
+            .content-area {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .toggle-sidebar-btn {
+                display: inline-block;
+            }
+        }
+        @media (min-width: 769px) {
+            .toggle-sidebar-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar d-flex flex-column align-items-start px-3">
+    <h4 class="text-center w-100">KCI Admin</h4>
+    <a th:href="@{/admin/dashboard}" th:classappend="${currentPath == '/admin'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a th:href="@{/admin/users}" th:classappend="${currentPath == '/admin/users'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-people-fill"></i> Users
+    </a>
+    <a th:href="@{/admin/modules}" th:classappend="${currentPath == '/admin/modules'} ? '' : ''">
+        <i class="bi bi-journal-richtext"></i> Modules
+    </a>
+    <a th:href="@{/admin/assignments}" th:classappend="${currentPath == '/admin/assignments'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-upload"></i> Assignments
+    </a>
+    <a th:href="@{/admin/doubts}" th:classappend="${currentPath == '/admin/doubts'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-question-circle-fill"></i> Student Doubts
+    </a>
+    <a th:href="@{/admin/videos}" th:classappend="${currentPath == '/admin/videos'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-camera-video"></i> Video Solutions
+    </a>
+    <a th:href="@{/admin/tests}" th:classappend="${currentPath == '/admin/tests'} ? '' : ''">
+        <i class="bi bi-file-earmark-text"></i> Manage Tests
+    </a>
+    <a th:href="@{/admin/review-results}" th:classappend="${currentPath == '/admin/review-results'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-clipboard-check"></i> Review Submissions
+    </a>
+    <a th:href="@{/admin/feedback/list}" th:classappend="${currentPath == '/admin/feedback/list'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-chat-left-dots"></i> Session Feedbacks
+    </a>
+    <a th:href="@{/admin/results/upload}" th:classappend="${currentPath == '/admin/results/upload'} ? '' : ''">
+        <i class="bi bi-upload"></i> Upload Result
+    </a>
+    <a th:href="@{/admin/results}" th:classappend="${currentPath == '/admin/results'} ? '' : ''">
+        <i class="bi bi-card-list"></i> View Results
+    </a>
+    <a th:href="@{/admin/queries}" th:classappend="${currentPath == '/admin/queries'} ? '' : ''">
+        <i class="bi bi-chat-left-text"></i> Student Queries
+    </a>
+    <a th:href="@{/admin/chat/threads}" th:classappend="${currentPath == '/admin/chat/threads'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-chat-left-text"></i> View Student Chats
+    </a>
+    <a th:href="@{/admin/chat/tutor-threads}" th:classappend="${currentPath == '/admin/chat/tutor-threads'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-person-lines-fill"></i> View Tutor Chats
+    </a>
+</div>
+<!-- Content Area -->
+<div class="content-area">
+    <div class="topbar d-flex justify-content-between align-items-center mb-4 shadow-sm">
+        <div>
+            <button class="btn btn-outline-primary d-md-none toggle-sidebar-btn" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            <h5 class="d-inline-block mb-0 ms-2">📊 Admin Dashboard</h5>
+        </div>
+        <form th:action="@{/logout}" method="post" class="m-0">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+        </form>
+    </div>
+
+    <!-- Dashboard Stats Widgets -->
+
+    <!-- Content injected from layout:fragment -->
+    <section layout:fragment="content"></section>
+
+    <footer class="text-center text-muted small mt-5">
+        &copy; 2025 Kiran Career Institute. All rights reserved.
+    </footer>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('show');
+    }
+</script>
+</body>
+</html>

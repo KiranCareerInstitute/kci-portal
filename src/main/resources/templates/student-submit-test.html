@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>Submit Test Answer</title>
+</head>
+<body>
+<section layout:fragment="content" class="container py-5">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h3 class="fw-bold">
+            📤 Submit Your Answer for
+            <span class="text-primary" th:text="${test != null ? test.title : 'Test'}">Test Title</span>
+        </h3>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+
+    <!-- Submission Form -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{'/student/tests/submit/' + ${test.id}}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="mb-4">
+                    <label for="answerFile" class="form-label">Upload PDF Answer</label>
+                    <input type="file" class="form-control" id="answerFile" name="answerFile" accept="application/pdf" required>
+                    <div class="invalid-feedback">
+                        Please upload your answer as a PDF file.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload"></i> Submit Answer
+                </button>
+                <a href="/student/tests" class="btn btn-secondary ms-2">
+                    <i class="bi bi-arrow-left"></i> Back to Tests
+                </a>
+            </form>
+        </div>
+    </div>
+
+</section>
+
+<!-- Bootstrap client-side form validation -->
+<script>
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+
+</body>
+</html>

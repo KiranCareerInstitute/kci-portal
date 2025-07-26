@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard – Student Chat Review</title>
+    <style>
+        .chat-box {
+            max-height: 530px;
+            overflow-y: auto;
+            background: #f8faff;
+            border-radius: 1.2rem;
+            box-shadow: 0 1px 12px 0 rgba(37,52,84,0.05);
+            padding: 2.2rem 1.2rem;
+        }
+        .msg-row { margin-bottom: 1.6rem; }
+        .msg-bubble {
+            display: inline-block;
+            padding: 0.7rem 1.1rem;
+            border-radius: 1.4rem;
+            font-size: 1.07rem;
+            line-height: 1.6;
+        }
+        .msg-student .msg-bubble {
+            background: #fffbe7;
+            color: #464212;
+            border: 1px solid #ffe082;
+        }
+        .msg-tutor .msg-bubble {
+            background: #d0ebff;
+            color: #09344c;
+            border: 1px solid #8cd7ff;
+        }
+        .msg-admin .msg-bubble {
+            background: #ffdddd;
+            color: #a7131a;
+            border: 1px solid #fd7474;
+        }
+        .msg-meta {
+            font-size: 0.93rem;
+            color: #788393;
+            margin-top: 0.3rem;
+        }
+        .msg-label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .restricted-badge {
+            font-size: 1rem;
+            padding: 0.4em 0.9em;
+            border-radius: 1em;
+            background: #ff5555;
+            color: #fff;
+            margin-left: 0.6em;
+        }
+        .unrestrict-btn, .restrict-btn {
+            min-width: 150px;
+        }
+        @media (max-width: 700px) {
+            .chat-box { padding: 1rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container-xl py-4">
+        <div class="d-flex align-items-center mb-3">
+            <h3 class="me-2">
+                🧑‍🎓 Chat with <span th:text="${studentEmail}">Student</span>
+            </h3>
+            <span th:if="${isRestricted}" class="restricted-badge">
+                <i class="bi bi-x-octagon"></i> Restricted
+            </span>
+        </div>
+        <hr class="mb-4"/>
+
+        <div class="chat-box mb-4">
+            <div th:each="msg : ${messages}" class="msg-row"
+                 th:classappend="
+                    ${msg.senderEmail == studentEmail} ? 'msg-student' :
+                    (${msg.senderEmail == 'admin@kci.com'} ? 'msg-admin' : 'msg-tutor')
+                 ">
+                <div class="msg-label"
+                     th:text="${msg.senderEmail == studentEmail ? '👨‍🎓 Student' :
+                               (msg.senderEmail == 'admin@kci.com' ? '🛡️ Admin' : '🎓 Tutor (' + msg.senderEmail + ')')}">
+                    Sender
+                </div>
+                <div class="msg-bubble" th:text="${msg.message}"></div>
+                <div class="msg-meta" th:text="${#temporals.format(msg.sentAt, 'dd MMM yyyy HH:mm')}"></div>
+            </div>
+            <div th:if="${#lists.isEmpty(messages)}" class="text-center text-muted py-4">
+                No chat messages yet.
+            </div>
+        </div>
+
+        <!-- Restrict/Unrestrict Actions (show only if user is a student) -->
+        <div class="mb-3" th:if="${studentUser != null and studentUser.role.contains('ROLE_USER')}">
+            <form th:if="${!isRestricted}" th:action="@{'/admin/chat/restrict/' + ${studentEmail}}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-warning restrict-btn">
+                    <i class="bi bi-lock-fill"></i> Restrict Student
+                </button>
+            </form>
+            <form th:if="${isRestricted}" th:action="@{'/admin/chat/unrestrict/' + ${studentEmail}}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success unrestrict-btn">
+                    <i class="bi bi-unlock-fill"></i> Unrestrict Student
+                </button>
+            </form>
+        </div>
+
+        <!-- Reply Form -->
+        <form th:action="@{'/admin/chat/reply/' + ${studentEmail}}" method="post" class="mb-4">
+            <div class="mb-3">
+                <label for="reply" class="form-label fw-semibold">Your Reply</label>
+                <textarea class="form-control" id="reply" name="replyMessage" rows="3" required></textarea>
+            </div>
+            <button class="btn btn-primary px-4"><i class="bi bi-send"></i> Send Reply</button>
+            <a th:href="@{/admin/chat/threads}" class="btn btn-outline-secondary ms-2">Go To Student Chat Thread</a>
+            <a th:href="@{/admin/chat/tutor-threads}" class="btn btn-outline-secondary ms-2">Go To Tutor Chat Thread</a>
+        </form>
+
+        <!-- Restriction Alert -->
+        <div th:if="${isRestricted}" class="alert alert-danger mt-2">
+            ❌ This student is currently restricted from sending new messages.
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard &mdash; Manage Tests</title>
+</head>
+<body>
+<section layout:fragment="content" class="container my-5">
+
+    <!-- Page Header -->
+    <header class="d-flex align-items-center mb-4">
+        <h3 class="m-0"><i class="bi bi-ui-checks-grid me-2"></i>Manage Practice Tests &amp; Exams</h3>
+    </header>
+
+    <!-- Add New Test Card -->
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+            <!-- Messages clearly visible -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <form th:action="@{/admin/tests/add}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="row g-3 align-items-end">
+
+                <div class="col-md-3">
+                    <label class="form-label visually-hidden" for="title">Title</label>
+                    <input type="text" id="title" name="title"
+                           class="form-control"
+                           placeholder="Test Title"
+                           required>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label visually-hidden" for="description">Description</label>
+                    <input type="text" id="description" name="description"
+                           class="form-control"
+                           placeholder="Short Description"
+                           required>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label visually-hidden" for="type">Type</label>
+                    <select id="type" name="type"
+                            class="form-select"
+                            required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="practice">Practice Test</option>
+                        <option value="exam">Online Exam</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label visually-hidden" for="pdfFile">PDF File</label>
+                    <input type="file" id="pdfFile" name="pdfFile"
+                           class="form-control"
+                           accept=".pdf">
+                </div>
+
+                <div class="col-md-1">
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+                        <i class="bi bi-plus-lg"></i> Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Tests Table Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-0">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-collection me-1"></i>Existing Tests
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark text-center">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Created On</th>
+                        <th scope="col">PDF</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="test, iterStat : ${tests}" class="text-center align-middle">
+                        <td th:text="${iterStat.count}">1</td>
+                        <td th:text="${test.title}">Sample Title</td>
+                        <td th:text="${test.description}">Sample Description</td>
+                        <td>
+                            <span th:if="${test.type == 'practice'}" class="badge bg-primary">Practice</span>
+                            <span th:if="${test.type == 'exam'}" class="badge bg-danger">Exam</span>
+                        </td>
+                        <td th:text="${#temporals.format(test.createdAt, 'dd-MM-yyyy HH:mm')}">
+                            01-07-2025 14:30
+                        </td>
+                        <td>
+                            <a th:if="${test.pdfPath != null}"
+                               th:href="@{'/admin/tests/pdf/' + ${test.pdfPath}}"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>View PDF
+                            </a>
+                            <span th:if="${test.pdfPath == null}" class="text-muted">No PDF</span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="Actions">
+                                <a th:href="@{'/admin/tests/edit/' + ${test.id}}"
+                                   class="btn btn-sm btn-warning"
+                                   title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form th:action="@{'/admin/tests/delete/' + ${test.id}}"
+                                      method="post"
+                                      onsubmit="return confirm('Are you sure you want to delete this test?');">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger"
+                                            title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(tests)}">
+                        <td colspan="7" class="text-center text-muted py-3">
+                            No tests found.
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

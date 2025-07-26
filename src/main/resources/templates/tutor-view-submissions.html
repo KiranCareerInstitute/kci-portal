@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>Tutor Dashboard — Submissions</title>
+</head>
+<body>
+<section layout:fragment="content" class="container my-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold"><i class="bi bi-journal-check me-2"></i>Student Test Submissions</h4>
+    </div>
+
+    <!-- Success Flash Message -->
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+
+    <!-- Filter Form -->
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="keyword" class="form-control" placeholder="🔍 Search by student or test"
+                       th:value="${keyword}">
+            </div>
+            <div class="col-md-4">
+                <select name="status" class="form-select">
+                    <option value="">-- All Status --</option>
+                    <option value="pending" th:selected="${status == 'pending'}">Pending Review</option>
+                    <option value="reviewed" th:selected="${status == 'reviewed'}">Reviewed</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-grid">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-filter"></i> Apply Filter
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Submissions Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-dark text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Test</th>
+                        <th>Submitted At</th>
+                        <th>Status</th>
+                        <th>File</th>
+                        <th>Marks</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="submission : ${submissions}" class="text-center">
+                        <td th:text="${submission.id}">1</td>
+                        <td th:text="${submission.user?.fullName}">User</td>
+                        <td th:text="${submission.test?.title}">Test</td>
+                        <td th:text="${#temporals.format(submission.submittedAt, 'dd MMM yyyy HH:mm')}">Time</td>
+                        <td>
+                            <span th:if="${submission.marks == null}" class="badge bg-warning text-dark">Pending</span>
+                            <span th:if="${submission.marks != null}" class="badge bg-success">Reviewed</span>
+                        </td>
+                        <td class="d-flex justify-content-center gap-2">
+                            <!-- View Admin Uploaded PDF -->
+                            <a th:if="${submission.test?.pdfPath != null}"
+                               th:href="@{'/uploads/test_submissions/' + ${submission.test.pdfPath}}"
+                               target="_blank"
+                               class="btn btn-outline-secondary btn-sm"
+                               title="View Admin PDF">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
+
+                            <a th:href="@{'/uploads/test_submissions/test_submissions/' + ${submission.fileName}}"
+                               class="btn btn-outline-primary btn-sm"
+                               target="_blank"
+                               title="Download Student Answer">
+                                <i class="bi bi-download"></i>
+                            </a>
+                        </td>
+                        <td th:text="${submission.marks != null ? submission.marks : '-'}">-</td>
+                        <td>
+                            <a th:href="@{'/tutor/test-submissions/review/' + ${submission.id}}"
+                               class="btn btn-sm btn-secondary" title="Review Submission">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(submissions)}">
+                        <td colspan="8" class="text-center text-muted py-3">No submissions found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/tutor/submissions(page=${currentPage - 1}, keyword=${keyword}, status=${status})}">&laquo;</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${currentPage == i} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/tutor/submissions(page=${i}, keyword=${keyword}, status=${status})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/tutor/submissions(page=${currentPage + 1}, keyword=${keyword}, status=${status})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+</section>
+</body>
+</html>

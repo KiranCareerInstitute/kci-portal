@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>My Uploaded Doubts</title>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white text-center">
+                <h5 class="mb-0"><i class="bi bi-question-circle me-2"></i>My Uploaded Doubts</h5>
+            </div>
+
+            <div class="card-body bg-light">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle bg-white">
+                        <thead class="table-light text-center">
+                        <tr>
+                            <th>Subject</th>
+                            <th>Description</th>
+                            <th>Uploaded File</th>
+                            <th>Status</th>
+                            <th>Feedback</th>
+                            <th>Solution</th>
+                            <th>Submitted At</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="doubt : ${doubts}">
+                            <td th:text="${doubt.subject}"></td>
+                            <td th:text="${doubt.description}"></td>
+                            <td class="text-center">
+                                <a th:href="@{'/uploads/' + ${doubt.FilePath}}" target="_blank"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye-fill"></i> View
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <span th:class="'badge rounded-pill px-3 py-2 ' + (${doubt.status == 'SOLVED'} ? 'bg-success' : 'bg-warning')"
+                                      th:text="${doubt.status == 'SOLVED'} ? 'Answered' : 'Pending'"></span>
+                            </td>
+                            <td th:text="${doubt.feedbackText != null ? doubt.feedbackText : '—'}"></td>
+                            <td class="text-center">
+                                <a th:if="${doubt.solutionFilePath != null}"
+                                   th:href="@{'/uploads/doubts/' + ${doubt.solutionFilePath}}"
+                                   target="_blank" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-file-earmark-arrow-down"></i> PDF
+                                </a>
+                                <span th:if="${doubt.solutionFilePath == null}">—</span>
+                            </td>
+                            <td th:text="${#temporals.format(doubt.submittedAt, 'dd MMM yyyy HH:mm')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between bg-white">
+                <a th:href="@{/dashboard}" class="btn btn-secondary">
+                    <i class="bi bi-house-door"></i> Dashboard
+                </a>
+                <a th:href="@{/student/doubts/upload}" class="btn btn-outline-secondary">
+                    <i class="bi bi-cloud-upload"></i> Upload New Doubt
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mt-3 text-muted small">
+            &copy; 2025 Kiran Career Institute. All rights reserved.
+        </div>
+    </div>
+</section>
+</body>
+</html>

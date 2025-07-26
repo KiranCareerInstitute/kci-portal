@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - All Users</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background-color: #1e1e2f;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h4 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #ced4da;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active,
+        .sidebar a.bg-primary {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+        }
+
+        .content-area {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 30px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4>KCI Admin</h4>
+    <a th:href="@{/admin/dashboard}" th:classappend="${currentPath == '/admin'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a th:href="@{/admin/users}" th:classappend="${currentPath == '/admin/users'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-people-fill"></i> Users
+    </a>
+    <a th:href="@{/admin/modules}" th:classappend="${currentPath == '/admin/modules'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-journal-richtext"></i> Modules
+    </a>
+    <a th:href="@{/admin/assignments}" th:classappend="${currentPath == '/admin/assignments'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-upload"></i> Assignments
+    </a>
+    <a th:href="@{/admin/queries}" th:classappend="${currentPath == '/admin/queries'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-chat-left-text"></i> Student Queries
+    </a>
+    <a th:href="@{/admin/results/upload}" th:classappend="${currentPath == '/admin/results/upload'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-upload"></i> Upload Result
+    </a>
+    <a th:href="@{/admin/results}" th:classappend="${currentPath == '/admin/results'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-card-list"></i> View Results
+    </a>
+    <a th:href="@{/admin/tests}" th:classappend="${currentPath == '/admin/tests'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-file-earmark-text"></i> Manage Tests
+    </a>
+    <a th:href="@{/admin/review-results}" th:classappend="${currentPath == '/admin/review-results'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-clipboard-check"></i> Review Submissions
+    </a>
+    <a th:href="@{/admin/videos}" th:classappend="${currentPath == '/admin/videos'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-camera-video"></i> Video Solutions
+    </a>
+    <form th:action="@{/logout}" method="post" class="text-center mt-4">
+        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+    </form>
+</div>
+
+<!-- Main Content -->
+<div class="content-area">
+    <header class="topbar d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>All Users</h5>
+    </header>
+
+    <div class="mt-4">
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Roles</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}">1</td>
+                    <td th:text="${user.fullName}">John Doe</td>
+                    <td th:text="${user.email}">john@example.com</td>
+                    <td th:text="${user.mobile}">+91-9876543210</td>
+                    <td>
+                        <span class="badge bg-success me-1"
+                              th:each="r : ${user.roles}" th:text="${r}">ROLE_USER</span>
+                    </td>
+                    <td>
+                        <form th:action="@{'/admin/users/delete/' + ${user.id}}" method="post"
+                              onsubmit="return confirm('Are you sure?');">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5 text-muted small">
+        &copy; 2025 Kiran Career Institute. All rights reserved.
+    </footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard – Tutor Chat Threads</title>
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .card {
+            border-radius: 1.1rem;
+            border: none;
+            margin-bottom: 2rem;
+        }
+        .card-body {
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+        }
+        .table {
+            margin-bottom: 0;
+            border-radius: 0.9rem;
+            overflow: hidden;
+        }
+        .table thead th {
+            background: linear-gradient(90deg, #356de7 0%, #4ac7fa 100%);
+            color: #fff;
+            font-size: 1.08rem;
+            border: none;
+        }
+        .table-hover tbody tr:hover {
+            background: #eef6ff;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #2979ff 0%, #4fc3f7 100%);
+            border: none;
+            font-weight: 500;
+            padding: 0.35em 1.3em;
+        }
+        .btn-secondary {
+            font-weight: 500;
+        }
+        .table td, .table th {
+            vertical-align: middle !important;
+        }
+        @media (max-width: 600px) {
+            .card-body {
+                padding: 1rem 0.5rem;
+            }
+            .table th, .table td {
+                font-size: 0.98rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container-xl mt-4">
+        <div class="mb-4 text-center">
+            <h2 class="fw-bold text-primary mb-1">
+                💬 Tutor Chat Threads
+            </h2>
+            <div class="text-muted" style="font-size:1.05rem;">Monitor & access all tutor chat histories here</div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover align-middle shadow-sm">
+                    <thead>
+                    <tr>
+                        <th style="width:50px;">#</th>
+                        <th style="min-width:160px;">Full Name</th>
+                        <th style="min-width:180px;">Email</th>
+                        <th style="width:120px;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tutor, iter : ${tutors}">
+                        <td th:text="${iter.index + 1}">1</td>
+                        <td th:text="${tutor.fullName}">Tutor Name</td>
+                        <td th:text="${tutor.email}">tutor@example.com</td>
+                        <td>
+                            <a th:href="@{'/admin/chat/threads/' + ${tutor.email}}"
+                               class="btn btn-sm btn-primary rounded-pill">
+                                <i class="bi bi-chat-dots"></i> View Chat
+                            </a>
+                        </td>
+                    </tr>
+                    <!-- Empty State -->
+                    <tr th:if="${#lists.isEmpty(tutors)}">
+                        <td colspan="4" class="text-center text-muted py-3">
+                            <i class="bi bi-inbox text-secondary" style="font-size:1.3rem;"></i>
+                            <span class="ms-2">No tutor chat threads found.</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/admin/dashboard" class="btn btn-secondary rounded-pill px-4">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

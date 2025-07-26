@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Review Doubt</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+    <div class="container py-4">
+        <!-- Page Heading -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-primary">
+                <i class="bi bi-camera-video me-2"></i> Manage Video Solutions
+            </h3>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-body">
+                <form th:action="@{/admin/videos/upload}" method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="Video Title" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Description</label>
+                        <input type="text" name="description" class="form-control" placeholder="Short Description" required>
+                    </div>
+                    <div class="col-12 text-muted small">
+                        You can optionally link this video to an assignment or a student doubt (or both).
+                    </div>
+
+                    <!-- Assignment Dropdown -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-success">📘 Link to Assignment (optional)</label>
+                        <select name="assignmentId" class="form-select">
+                            <option value="">-- Select Assignment --</option>
+                            <option th:each="a : ${assignments}"
+                                    th:value="${a.id}"
+                                    th:text="${a.title != null ? a.title : 'Untitled'}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-primary">❓ Link to Student Doubt (optional)</label>
+                        <select name="doubtId" class="form-select">
+                            <option value="">-- Select Student Doubt --</option>
+                            <option th:each="d : ${doubts}"
+                                    th:value="${d.id}"
+                                    th:text="${d.subject + ' - ' + (d.studentEmail != null ? d.studentEmail : 'Unknown')}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Video File</label>
+                        <input type="file" name="videoFile" class="form-control" accept="video/*" required>
+                    </div>
+                    <div class="col-md-6 d-grid align-self-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i> Upload Video
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <form method="get" th:action="@{/admin/videos}" class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label for="uploaderType" class="form-label fw-semibold">Uploader Type</label>
+                <select class="form-select" id="uploaderType" name="uploaderType">
+                    <option value="">All</option>
+                    <option value="ROLE_ADMIN" th:selected="${uploaderType == 'ROLE_ADMIN'}">Admin</option>
+                    <option value="ROLE_TUTOR" th:selected="${uploaderType == 'ROLE_TUTOR'}">Tutor</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="assignmentId" class="form-label fw-semibold">Assignment</label>
+                <select id="assignmentId" name="assignmentId" class="form-select">
+                    <option value="">-- All Assignments --</option>
+                    <option th:each="a : ${assignments}"
+                            th:value="${a.id}"
+                            th:text="${a.title}"
+                            th:selected="${selectedAssignmentId != null and selectedAssignmentId == a.id}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Apply Filter
+                </button>
+            </div>
+        </form>
+
+        <!-- Videos Table -->
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <h5 class="mb-3 text-secondary">Uploaded Videos</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark text-center">
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Assignment</th>
+                            <th>Video</th>
+                            <th>Feedback</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                            <th>Uploaded By</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="v, iterStat : ${videos}">
+                            <td th:text="${iterStat.count}" class="text-center">1</td>
+                            <td th:text="${v.title}">Sample</td>
+                            <td th:text="${v.description}">Description</td>
+                            <td th:text="${v.assignment != null ? v.assignment.title : 'None'}">Assignment</td>
+                            <td class="text-center">
+                                <a th:href="@{'/uploads/videos/' + ${v.videoPath}}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-play-circle me-1"></i> Play
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{'/admin/videos/video-feedback/' + ${v.id}}" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-chat-dots me-1"></i> Feedback
+                                </a>
+                            </td>
+                            <td th:text="${#temporals.format(v.createdAt, 'dd-MM-yyyy HH:mm')}">Date</td>
+                            <td class="text-center">
+                                <form th:action="@{'/admin/videos/delete/' + ${v.id}}" method="post" onsubmit="return confirm('Are you sure?');">
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash3 me-1"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                            <td th:text="${v.uploadedBy != null ? v.uploadedBy.fullName : 'Admin'}">Uploader</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>Upload Assignments</title>
+</head>
+<body>
+<section layout:fragment="content">
+
+<!-- Page Title -->
+    <h4 class="mb-4 text-primary"><i class="bi bi-bar-chart me-2"></i>My Test Results</h4>
+
+    <!-- Results Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle shadow-sm">
+            <thead class="table-light text-center">
+            <tr>
+                <th>Test Name</th>
+                <th>Submitted File</th>
+                <th>Marks</th>
+                <th>Feedback</th>
+                <th>Submitted At</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${submissions}">
+                <td th:text="${result.test?.title ?: 'Untitled Test'}">Test Title</td>
+                <td>
+                    <a th:href="@{'/student/download/' + ${result.id}}"
+                       th:text="${result.fileName ?: 'Download File'}"
+                       class="text-decoration-none text-primary">
+                        Download
+                    </a>
+                </td>
+                <td th:text="${result.marks != null ? result.marks : 'Pending'}">Marks</td>
+                <td th:text="${result.feedback != null ? result.feedback : 'Awaiting'}">Feedback</td>
+                <td th:text="${#temporals.format(result.submittedAt, 'dd-MM-yyyy HH:mm')}">Date</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(submissions)}">
+                <td colspan="5" class="text-center text-muted">No results available yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-muted small">
+        &copy; 2025 Kiran Career Institute. All rights reserved.
+    </footer>
+</div>
+</section>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/student-layout-doubt}">
+<head>
+    <title>Ask a Question</title>
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .fullpage-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        .askq-container {
+            background: #fff;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 32px rgba(30,32,47,0.13);
+            padding: 2.5rem 2.5rem 2rem 2.5rem;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .askq-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #253267;
+        }
+        .askq-desc {
+            color: #8a98b8;
+            font-size: 1.08rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .form-control-lg {
+            border-radius: 0.6rem;
+        }
+        .btn-primary {
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 1.12rem;
+            letter-spacing: 0.01em;
+        }
+        @media (max-width: 900px) {
+            .askq-container { padding: 1.4rem 0.6rem 1rem 0.6rem; }
+        }
+        @media (max-width: 600px) {
+            .askq-title { font-size: 1.3rem; }
+            .askq-desc { font-size: 0.97rem; }
+            .askq-container { padding: 0.7rem 0.2rem 0.7rem 0.2rem; border-radius: 0.8rem; }
+            .form-label, .form-control, .btn-primary { font-size: 0.98rem; }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="fullpage-section">
+        <div class="askq-container">
+            <div class="text-center mb-3">
+                <div class="askq-title mb-1">Ask a Question</div>
+                <div class="askq-desc">
+                    Submit your academic or course-related queries below.<br>
+                    Our instructors or support team will respond as soon as possible.
+                </div>
+            </div>
+            <form th:action="@{/student/query/ask}" method="post" autocomplete="off">
+                <div class="mb-4">
+                    <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                    <input type="text" id="subject" name="subject" class="form-control form-control-lg"
+                           placeholder="Enter the subject of your query" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label for="question" class="form-label">Your Question <span class="text-danger">*</span></label>
+                    <textarea id="question" name="question" class="form-control form-control-lg" rows="5"
+                              placeholder="Type your question here..." required></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+                        <i class="bi bi-send me-2"></i> Submit Query
+                    </button>
+                </div>
+            </form>
+            <div th:if="${message}" class="alert alert-success mt-4" th:text="${message}"></div>
+            <div th:if="${error}" class="alert alert-danger mt-4" th:text="${error}"></div>
+        </section>
+</body>
+</html>

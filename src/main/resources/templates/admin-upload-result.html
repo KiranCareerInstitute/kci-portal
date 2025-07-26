@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content">
+<div class="upload-bg w-100">
+        <div class="container-fluid py-4">
+            <div class="main-card card">
+                <div class="card-header pb-0 pt-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-upload fs-2 me-2 text-primary"></i>
+                        <span class="section-title">Upload Student Result</span>
+                    </div>
+                    <div class="text-muted mt-1 ms-1 mb-2">Easily record test outcomes for any student and exam module.</div>
+                </div>
+                <div class="card-body py-4">
+                    <form th:action="@{/admin/results/upload}" method="post" class="row g-4 needs-validation" novalidate>
+                        <!-- Student Select -->
+                        <div class="col-md-6">
+                            <label class="form-label">Select Student <span class="text-danger">*</span></label>
+                            <select name="userId" class="form-select shadow-sm" required>
+                                <option value="">-- Select Student --</option>
+                                <option th:each="student : ${students}"
+                                        th:value="${student.id}"
+                                        th:text="${student.fullName + ' (' + student.email + ')'}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback">Please select a student.</div>
+                        </div>
+                        <!-- Module Title -->
+                        <div class="col-md-6">
+                            <label class="form-label">Module Title <span class="text-danger">*</span></label>
+                            <input type="text" name="moduleTitle" class="form-control shadow-sm" placeholder="e.g. Mathematics" required>
+                            <div class="invalid-feedback">Module title is required.</div>
+                        </div>
+                        <!-- Test Name -->
+                        <div class="col-md-6">
+                            <label class="form-label">Test Name <span class="text-danger">*</span></label>
+                            <input type="text" name="testName" class="form-control shadow-sm" placeholder="e.g. Final Exam" required>
+                            <div class="invalid-feedback">Test name is required.</div>
+                        </div>
+                        <!-- Score -->
+                        <div class="col-md-6">
+                            <label class="form-label">Score <span class="text-danger">*</span></label>
+                            <input type="number" name="score" class="form-control shadow-sm" required min="0" max="100" placeholder="e.g. 85">
+                            <div class="invalid-feedback">Enter a score (0-100).</div>
+                        </div>
+                        <!-- Passed Select -->
+                        <div class="col-md-6">
+                            <label class="form-label">Passed? <span class="text-danger">*</span></label>
+                            <select name="passed" class="form-select shadow-sm" required>
+                                <option value="">-- Select --</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                            <div class="invalid-feedback">Please specify if the student passed.</div>
+                        </div>
+                        <!-- Date Taken -->
+                        <div class="col-md-6">
+                            <label class="form-label">Date Taken <span class="text-danger">*</span></label>
+                            <input type="date" name="dateTaken" class="form-control shadow-sm" required>
+                            <div class="invalid-feedback">Select a date.</div>
+                        </div>
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/admin/dashboard" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary submit-btn btn-lg">
+                                <i class="bi bi-save me-1"></i> Save Result
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Client-side Bootstrap validation -->
+    <script>
+        (function () {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+</section>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!-- templates/fragments/tutor-layout.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$TITLE - KCI">Tutor Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #1e1e2f;
+            position: fixed;
+            width: 240px;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+        .sidebar h4 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #ced4da;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .sidebar a:hover,
+        .sidebar a.active,
+        .sidebar a.bg-primary {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .content-area {
+            margin-left: 240px;
+            padding: 30px;
+        }
+        .topbar {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4>KCI Tutor</h4>
+    <a th:href="@{/tutor/dashboard}"
+       th:classappend="${currentPath == '/tutor/dashboard'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a th:href="@{/tutor/assignments}"
+       th:classappend="${currentPath == '/tutor/assignments'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-journal-check"></i> Review Assignments
+    </a>
+    <a th:href="@{/tutor/doubts}"
+       th:classappend="${currentPath == '/tutor/doubts'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-question-diamond"></i> Review Doubts
+    </a>
+    <a th:href="@{/tutor/videos}"
+       th:classappend="${currentPath == '/tutor/videos'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-camera-video"></i> My Videos
+    </a>
+    <a th:href="@{/tutor/tests/upload}" th:classappend="${currentPath == '/tutor/tests/upload'} ? 'active'">
+        <i class="bi bi-plus-circle me-2"></i> Upload Test
+    </a>
+    <a th:href="@{/tutor/submissions}"
+       th:classappend="${currentPath == '/tutor/submissions'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-folder2-open"></i> View Test Submissions
+    </a>
+    <a th:href="@{/tutor/availability}"
+       th:classappend="${currentPath == '/tutor/availability'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-calendar-plus"></i> Add Availability
+    </a>
+    <a th:href="@{/tutor/my-slots}"
+       th:classappend="${currentPath == '/tutor/my-slots'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-calendar-event"></i> My Slots
+    </a>
+    <a th:href="@{/tutor/chat}"
+       th:classappend="${currentPath == '/tutor/chat'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-envelope"></i> Student Messages
+    </a>
+    <a th:href="@{/tutor/chat/history}"
+       th:classappend="${currentPath == '/tutor/chat/history'} ? 'active text-white bg-primary' : ''">
+        <i class="bi bi-clock-history"></i> Chat History
+    </a>
+</div>
+
+<!-- Main Content Area -->
+<div class="content-area">
+    <div class="topbar d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">🎓 Tutor Dashboard</h5>
+        <form th:action="@{/logout}" method="post" class="mb-0">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+        </form>
+    </div>
+
+    <!-- Dynamic Content -->
+    <section layout:fragment="content"></section>
+
+    <!-- Footer -->
+    <footer class="text-center mt-5">
+        &copy; 2025 TharHost | Tutor Panel
+    </footer>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container">
+    <div id="chatToast" class="toast bg-primary text-white" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-primary text-white">
+            <strong class="me-auto">📥 New Student Message</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessageBody">
+            You have new messages!
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let lastRepliedCount = 0;
+
+    function showToast(message) {
+        document.getElementById('toastMessageBody').textContent = message;
+        const toast = new bootstrap.Toast(document.getElementById('chatToast'));
+        toast.show();
+    }
+
+    function checkRepliedMessages() {
+        fetch('/api/chat/replied-count')
+            .then(response => response.json())
+            .then(count => {
+                const badge = document.getElementById('repliedCountBadge');
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('d-none');
+                    if (count > lastRepliedCount) {
+                        showToast(`📩 You have ${count} new replies!`);
+                    }
+                    lastRepliedCount = count;
+                } else {
+                    badge.classList.add('d-none');
+                    lastRepliedCount = 0;
+                }
+            });
+    }
+
+    setInterval(checkRepliedMessages, 30000); // Check every 30 seconds
+    checkRepliedMessages();
+</script>
+
+</body>
+</html>

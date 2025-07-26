@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Edit Test &mdash; Admin Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content" class="container my-5">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h3 class="mb-3">
+            <i class="bi bi-pencil-square me-2"></i>Edit Practice Test / Exam
+        </h3>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <!-- Success Message -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <!-- Error Message -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <form th:action="@{'/admin/tests/edit/' + ${test.id}}" method="post" class="row g-3">
+                <div class="col-md-4">
+                    <label for="title" class="form-label">Test Title</label>
+                    <input type="text" name="title" id="title" th:value="${test.title}" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="description" class="form-label">Short Description</label>
+                    <input type="text" name="description" id="description" th:value="${test.description}" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Type</label>
+                    <select name="type" id="type" class="form-select" required>
+                        <option value="">Select Type</option>
+                        <option th:value="practice" th:selected="${test.type == 'practice'}">Practice Test</option>
+                        <option th:value="exam" th:selected="${test.type == 'exam'}">Online Exam</option>
+                    </select>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle"></i> Update Test
+                    </button>
+                    <a th:href="@{/admin/tests}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancel / Back
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="mt-4">
+        <a th:href="@{/admin/dashboard}" class="btn btn-outline-primary">
+            <i class="bi bi-speedometer2 me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+</section>
+</body>
+</html>

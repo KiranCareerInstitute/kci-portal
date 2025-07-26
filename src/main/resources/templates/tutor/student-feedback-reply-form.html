@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title>My Scheduled Slots</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container mt-4">
+
+        <h3>🔁 Reply to Student Feedback</h3>
+        <p><strong>Student:</strong> <span th:text="${slot.studentEmail}">student@example.com</span></p>
+        <p><strong>Date:</strong> <span th:text="${slot.date}">2025-07-18</span></p>
+        <p><strong>Time:</strong> <span th:text="${slot.startTime} + ' - ' + ${slot.endTime}">10:00 - 11:00</span></p>
+
+        <!-- ✅ If feedback exists, show form -->
+        <div th:if="${feedback != null}">
+            <div class="mb-3">
+                <label><strong>📝 Student Feedback:</strong></label>
+                <p th:text="${feedback.feedbackText}" class="border p-3 bg-light rounded">Good session...</p>
+            </div>
+
+            <!-- ✅ Reply form -->
+            <form th:action="@{'/tutor/feedback/reply-feedback/' + ${slot.id}}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="mb-3">
+                    <label class="form-label">✍️ Your Reply</label>
+                    <textarea name="tutorReplyText" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Send Reply</button>
+                <a href="/tutor/my-slots" class="btn btn-secondary ms-2">⬅️ Back</a>
+            </form>
+        </div>
+
+        <!-- ❌ No feedback available -->
+        <div th:unless="${feedback != null}">
+            <div class="alert alert-warning mt-3">⚠️ No student feedback to reply to.</div>
+            <a href="/tutor/my-slots" class="btn btn-secondary mt-2">⬅️ Back</a>
+        </div>
+
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title>Admin Dashboard - Student Doubts</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <h3 class="mb-4 text-primary"><i class="bi bi-question-circle-fill me-2"></i> All Student Doubts</h3>
+
+        <!-- ✅ Flash messages -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- ✅ Filter Section -->
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Filter by Status</label>
+                <select class="form-select" name="status" onchange="this.form.submit()">
+                    <option th:value="ALL" th:selected="${selectedStatus == 'ALL'}">All</option>
+                    <option th:value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pending</option>
+                    <option th:value="SOLVED" th:selected="${selectedStatus == 'SOLVED'}">Solved</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Filter by Assignment</label>
+                <select class="form-select" name="assignment" onchange="this.form.submit()">
+                    <option th:value="ALL" th:selected="${selectedAssignment == 'ALL'}">All</option>
+                    <option th:value="UNASSIGNED" th:selected="${selectedAssignment == 'UNASSIGNED'}">Unassigned</option>
+                    <option th:value="ASSIGNED" th:selected="${selectedAssignment == 'ASSIGNED'}">Assigned</option>
+                </select>
+            </div>
+        </form>
+
+        <!-- ✅ Doubts Table -->
+        <div class="table-responsive bg-white shadow-sm rounded p-3">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                <tr class="text-center">
+                    <th>Student Email</th>
+                    <th>Subject</th>
+                    <th>Description</th>
+                    <th>Submitted At</th>
+                    <th>Status</th>
+                    <th>Assigned Tutor</th>
+                    <th>File</th>
+                    <th>Feedback</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="doubt : ${doubts}" class="text-center">
+                    <td th:text="${doubt.studentEmail}"></td>
+                    <td th:text="${doubt.subject}"></td>
+                    <td th:text="${doubt.description}"></td>
+                    <td>
+                        <span th:if="${doubt.submittedAt != null}"
+                              th:text="${#temporals.format(doubt.submittedAt, 'dd MMM yyyy HH:mm')}"></span>
+                        <span th:if="${doubt.submittedAt == null}">—</span>
+                    </td>
+                    <td>
+                        <span th:class="'badge rounded-pill px-3 py-2 ' + (doubt.status == 'SOLVED' ? 'bg-success' : 'bg-warning text-dark')"
+                              th:text="${doubt.status}"></span>
+                    </td>
+                    <td>
+                        <div th:if="${doubt.assignedTutor != null && doubt.assignedTutor.name != null}">
+                            <span th:text="${doubt.assignedTutor.name + ' (' + doubt.assignedTutor.email + ')'}"></span>
+                        </div>
+                        <form th:action="@{'/admin/doubts/assign/' + ${doubt.id}}" method="post" class="mt-1">
+                            <select name="tutorId" class="form-select form-select-sm mb-2" required>
+                                <option value="">-- Select Tutor --</option>
+                                <option th:each="tutor : ${tutors}"
+                                        th:value="${tutor.id}"
+                                        th:text="${tutor.name + ' (' + tutor.email + ')'}"></option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="bi bi-person-plus"></i> Assign
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <a th:if="${doubt.filePath != null}"
+                           th:href="@{'/uploads/' + ${doubt.filePath}}"
+                           target="_blank"
+                           class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-file-earmark-text"></i> View
+                        </a>
+                        <span th:if="${doubt.filePath == null}">—</span>
+                    </td>
+                    <td>
+                        <span th:if="${doubt.feedbackText != null}" th:text="${doubt.feedbackText}"></span>
+                        <span th:if="${doubt.feedbackText == null}">—</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/admin/doubts/review/' + ${doubt.id}}"
+                           class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-pencil-square"></i> Review
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ✅ Back Button -->
+        <div class="mt-4">
+            <a href="/admin/dashboard" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>
