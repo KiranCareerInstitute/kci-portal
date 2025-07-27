@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title layout:fragment="title">Edit Test — Tutor</title>
+</head>
+<body>
+<section layout:fragment="content" class="container my-5">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h3><i class="bi bi-pencil-square me-2"></i>Edit Practice Test / Exam</h3>
+    </div>
+
+    <!-- Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-danger"  th:text="${error}"></div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form th:action="@{/tutor/tests/edit/{id}(id=${test.id})}"
+                  method="post"
+                  class="row g-3">
+
+                <!-- CSRF -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="col-md-4">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text"
+                           id="title"
+                           name="title"
+                           th:value="${test.title}"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text"
+                           id="description"
+                           name="description"
+                           th:value="${test.description}"
+                           class="form-control"
+                           required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Type</label>
+                    <select id="type"
+                            name="type"
+                            class="form-select"
+                            required>
+                        <option value="">Select Type</option>
+                        <option value="practice"
+                                th:selected="${test.type=='practice'}">Practice Test</option>
+                        <option value="exam"
+                                th:selected="${test.type=='exam'}">Online Exam</option>
+                    </select>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle me-1"></i> Update Test
+                    </button>
+                    <a th:href="@{/tutor/tests}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

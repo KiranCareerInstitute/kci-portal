@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <!-- Title fragment, replaced by child pages -->
     <title layout:fragment="title">Tutor Panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -133,17 +135,16 @@
                class="nav-link">
                 <i class="bi bi-camera-video me-2"></i> My Videos
             </a>
-        </li>
+                <li class="nav-item">
+                    <a th:href="@{/tutor/tests}"
+                       th:classappend="${currentPath=='/tutor/tests'} ? ' active' : ''"
+                       class="nav-link">
+                        <i class="bi bi-file-earmark-text me-2"></i> Manage Tests
+                    </a>
+                </li>
         <li class="nav-item">
-            <a th:href="@{/tutor/tests/upload}"
-               th:classappend="${currentPath=='/tutor/tests/upload'} ? ' active' : ''"
-               class="nav-link">
-                <i class="bi bi-plus-circle me-2"></i> Upload Test
-            </a>
-        </li>
-        <li class="nav-item">
-            <a th:href="@{/tutor/submissions}"
-               th:classappend="${currentPath=='/tutor/submissions'} ? ' active' : ''"
+            <a th:href="@{/tutor/tests/submissions}"
+               th:classappend="${currentPath=='/tutor/tests/submissions'} ? ' active' : ''"
                class="nav-link">
                 <i class="bi bi-folder2-open me-2"></i> View Submissions
             </a>

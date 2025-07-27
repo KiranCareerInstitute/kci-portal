@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/tutor-layout}">
+<head>
+    <title layout:fragment="title">Review Submission — Tutor</title>
+</head>
+<body>
+<section layout:fragment="content" class="container my-5">
+
+    <h3 class="mb-4"><i class="bi bi-pencil-square me-2"></i>Review Submission</h3>
+
+    <!-- Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-danger"  th:text="${error}"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/tutor/tests/submissions/review/{id}(id=${submission.id})}"
+                  method="post" class="row g-3">
+
+                <!-- CSRF -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="col-12">
+                    <p><strong>Student:</strong> <span th:text="${submission.user.fullName}"/></p>
+                    <p><strong>Test:</strong>    <span th:text="${submission.test.title}"/></p>
+                    <p>
+                        <strong>File:</strong>
+                        <a th:href="@{/tutor/tests/pdf/{f}(f=${submission.fileName})}"
+                           target="_blank">
+                            View PDF
+                        </a>
+                    </p>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="marks">Marks</label>
+                    <input type="number" id="marks" name="marks"
+                           th:value="${submission.marks}"
+                           class="form-control" required>
+                </div>
+
+                <div class="col-md-9">
+                    <label class="form-label" for="feedback">Feedback</label>
+                    <input type="text" id="feedback" name="feedback"
+                           th:value="${submission.feedback}"
+                           class="form-control" required>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-send-check me-1"></i> Save Review
+                    </button>
+                    <a th:href="@{/tutor/tests/submissions}" class="btn btn-secondary ms-2">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Submissions
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

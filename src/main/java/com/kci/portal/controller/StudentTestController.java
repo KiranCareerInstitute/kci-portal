@@ -30,173 +30,185 @@ import java.util.UUID;
 @RequestMapping("/student")
 public class StudentTestController {
 
-    @Value("${upload.path.tests}")
-    private String testsUploadPath; // e.g. C:/.../uploads
+    @Value("${upload.path.test_submissions}")
+    private String testSubmissionsDir;
 
     private final TestRepository testRepository;
     private final TestSubmissionRepository testSubmissionRepository;
     private final UserRepository userRepository;
+    private final UserService userService;      // ← Add this
 
     @Autowired
     public StudentTestController(TestRepository testRepository,
                                  TestSubmissionRepository testSubmissionRepository,
                                  UserRepository userRepository,
                                  UserService userService) {
-        this.testRepository = testRepository;
+        this.testRepository           = testRepository;
         this.testSubmissionRepository = testSubmissionRepository;
-        this.userRepository = userRepository;
+        this.userRepository           = userRepository;
+        this.userService              = userService;
     }
 
-    // Show all available tests
+    // ─── STUDENT VIEWS ───────────────────────────────────────────────────────────────
+
     @GetMapping("/tests")
     public String showAvailableTests(Model model) {
         model.addAttribute("tests", testRepository.findAll());
         return "student-tests";
     }
 
-    // Show test submission form
     @GetMapping("/tests/submit/{id}")
-    public String showSubmitForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String showSubmitForm(@PathVariable Long id,
+                                 Model model,
+                                 RedirectAttributes ra) {
         return testRepository.findById(id)
                 .map(test -> {
                     model.addAttribute("test", test);
                     return "student-submit-test";
                 })
                 .orElseGet(() -> {
-                    redirectAttributes.addFlashAttribute("error", "Test not found.");
+                    ra.addFlashAttribute("error", "Test not found.");
                     return "redirect:/student/tests";
                 });
     }
 
-    // Handle student test submission (PDF answer)
     @PostMapping("/tests/submit/{id}")
     public String handleTestSubmission(@PathVariable Long id,
                                        @RequestParam("answerFile") MultipartFile file,
                                        Principal principal,
-                                       RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes ra) {
+
+        if (file.isEmpty()) {
+            ra.addFlashAttribute("error", "Please upload a valid PDF file.");
+            return "redirect:/student/tests/submit/" + id;
+        }
+
+        Optional<Test> testOpt = testRepository.findById(id);
+        Optional<User> userOpt = userRepository.findByEmail(principal.getName());
+
+        if (testOpt.isEmpty() || userOpt.isEmpty()) {
+            ra.addFlashAttribute("error", "Test or user not found.");
+            return "redirect:/student/tests";
+        }
+
         try {
-            if (file.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Please upload a valid PDF file.");
-                return "redirect:/student/tests/submit/" + id;
-            }
-
-            Optional<Test> testOpt = testRepository.findById(id);
-            Optional<User> userOpt = userRepository.findByEmail(principal.getName());
-
-            if (testOpt.isEmpty() || userOpt.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Test or User not found.");
-                return "redirect:/student/tests";
-            }
-
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path submissionDir = Paths.get(testsUploadPath, "test_submissions");
+            // ← here: no extra "test_submissions" folder
+            Path submissionDir = Paths.get(testSubmissionsDir)
+                    .toAbsolutePath()
+                    .normalize();
             Files.createDirectories(submissionDir);
+
+            String fileName = UUID.randomUUID()
+                    + "_" + file.getOriginalFilename();
             Path submissionPath = submissionDir.resolve(fileName);
-            file.transferTo(submissionPath);
+            file.transferTo(submissionPath.toFile());
 
             TestSubmission submission = new TestSubmission();
             submission.setTest(testOpt.get());
             submission.setUser(userOpt.get());
             submission.setFileName(fileName);
             submission.setSubmittedAt(LocalDateTime.now());
-
             testSubmissionRepository.save(submission);
 
-            redirectAttributes.addFlashAttribute("success", "Test submitted successfully.");
+            ra.addFlashAttribute("success", "Test submitted successfully.");
             return "redirect:/student/tests";
 
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            ra.addFlashAttribute("error", "Error: " + e.getMessage());
             return "redirect:/student/tests/submit/" + id;
         }
     }
 
-    // View student's own submissions
     @GetMapping("/tests/submissions")
-    public String viewMySubmissions(Model model, Principal principal, RedirectAttributes redirectAttributes) {
-        Optional<User> userOpt = userRepository.findByEmail(principal.getName());
-
-        if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "User not found.");
+    public String viewMySubmissions(Model model,
+                                    Principal principal,
+                                    RedirectAttributes ra) {
+        Optional<User> u = userRepository.findByEmail(principal.getName());
+        if (u.isEmpty()) {
+            ra.addFlashAttribute("error", "User not found.");
             return "redirect:/student/tests";
         }
-
-        List<TestSubmission> submissions = testSubmissionRepository.findByUser(userOpt.get());
-        model.addAttribute("submissions", submissions);
+        List<TestSubmission> subs = testSubmissionRepository.findByUser(u.get());
+        model.addAttribute("submissions", subs);
         return "student-test-submissions";
     }
 
-    // View marks and feedback (results)
     @GetMapping("/my-results")
-    public String viewMyResults(Model model, Principal principal, RedirectAttributes redirectAttributes) {
-        Optional<User> userOpt = userRepository.findByEmail(principal.getName());
-
-        if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "User not found.");
+    public String viewMyResults(Model model,
+                                Principal principal,
+                                RedirectAttributes ra) {
+        Optional<User> u = userRepository.findByEmail(principal.getName());
+        if (u.isEmpty()) {
+            ra.addFlashAttribute("error", "User not found.");
             return "redirect:/student/tests";
         }
-
-        List<TestSubmission> submissions = testSubmissionRepository.findByUser(userOpt.get());
-        model.addAttribute("submissions", submissions);
+        List<TestSubmission> subs = testSubmissionRepository.findByUser(u.get());
+        model.addAttribute("submissions", subs);
         return "student-my-results";
     }
 
-    // Optional: JSON API for results
     @GetMapping("/results-json")
     @ResponseBody
     public ResponseEntity<List<TestSubmission>> getMyResultsJson(Principal principal) {
-        Optional<User> userOpt = userRepository.findByEmail(principal.getName());
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(testSubmissionRepository.findByUser(userOpt.get()));
+        Optional<User> u = userRepository.findByEmail(principal.getName());
+        return u
+                .map(user -> ResponseEntity.ok(testSubmissionRepository.findByUser(user)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Download a student's own submitted answer (from /uploads/test_submissions)
+    // ─── DOWNLOAD YOUR OWN ANSWER ────────────────────────────────────────────────────
+
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadSubmission(@PathVariable Long id) {
-        Optional<TestSubmission> optionalSubmission = testSubmissionRepository.findById(id);
-        if (optionalSubmission.isEmpty()) {
+        Optional<TestSubmission> opt = testSubmissionRepository.findById(id);
+        if (opt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        TestSubmission submission = optionalSubmission.get();
-        Path filePath = Paths.get(testsUploadPath, "test_submissions", submission.getFileName());
+        TestSubmission submission = opt.get();
+        Path filePath = Paths.get(testSubmissionsDir)
+                .resolve(submission.getFileName())
+                .normalize();
 
         try {
-            Resource resource = new UrlResource(filePath.toUri());
-            if (!resource.exists()) {
+            Resource res = new UrlResource(filePath.toUri());
+            if (!res.exists() || !res.isReadable()) {
                 return ResponseEntity.notFound().build();
             }
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + submission.getFileName() + "\"")
-                    .body(resource);
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + submission.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(res);
 
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
 
-    // **DOWNLOAD TEST PAPER (uploaded by tutor/admin)**
+    // ─── SERVE TEST‐PAPERS UPLOADED BY ADMIN/TUTOR ─────────────────────────────────
+
     @GetMapping("/test-pdfs/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveTestPdf(@PathVariable String filename) {
         try {
-            // Serve from uploads/test_submissions/test_papers
-            Path filePath = Paths.get(testsUploadPath, "test_submissions", "test_papers").resolve(filename).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                        .contentType(MediaType.APPLICATION_PDF)
-                        .body(resource);
-            } else {
+            // if you still want a subfolder for test‐papers, change this accordingly
+            Path filePath = Paths.get(testSubmissionsDir)
+                    .resolve(filename)
+                    .normalize();
+            Resource res = new UrlResource(filePath.toUri());
+            if (!res.exists() || !res.isReadable()) {
                 return ResponseEntity.notFound().build();
             }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + res.getFilename() + "\"")
+                    .body(res);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();

@@ -41,6 +41,9 @@ public class AdminVideoController {
     @Value("${upload.path.videos}")
     private String videosUploadPath;
 
+    @Value("${upload.path.tests}")
+    private String testUploadPath;
+
     /** URL path your ResourceHandler will serve from that folder */
     private static final String UPLOAD_URL_PREFIX = "/uploads/videos";
 
