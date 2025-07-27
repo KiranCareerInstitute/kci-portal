@@ -1,181 +1,318 @@
-<!-- templates/fragments/tutor-layout.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title layout:title-pattern="$TITLE - KCI">Tutor Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Title fragment, replaced by child pages -->
+    <title layout:fragment="title">Tutor Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap & Icons -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"/>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+            rel="stylesheet"/>
+
     <style>
         body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', sans-serif;
+          margin: 0;
+          font-family: 'Segoe UI', sans-serif;
+          background: #f4f6f9;
         }
-        .sidebar {
-            height: 100vh;
-            background-color: #1e1e2f;
-            position: fixed;
-            width: 240px;
-            padding-top: 20px;
-            overflow-y: auto;
+        /* Desktop sidebar */
+        #sidebarMenu {
+          position: fixed;
+          top: 0; left: 0;
+          width: 240px; height: 100vh;
+          background: #1e1e2f;
+          color: #ced4da;
+          display: flex; flex-direction: column;
+          padding-top: 1.5rem;
+          box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+          z-index: 1040;
+          transition: width .2s;
         }
-        .sidebar h4 {
-            color: #fff;
-            text-align: center;
-            margin-bottom: 30px;
+        #sidebarMenu.collapsed {
+          width: 0; overflow: hidden;
         }
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: #ced4da;
-            text-decoration: none;
-            transition: all 0.3s ease;
+        #sidebarMenu h4 {
+          margin: 0;
+          color: #fff;
+          text-align: center;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #343a40;
         }
-        .sidebar a:hover,
-        .sidebar a.active,
-        .sidebar a.bg-primary {
-            background-color: #343a40 !important;
-            color: #fff !important;
+        #sidebarMenu .nav-link {
+          color: #ced4da;
+          padding: .75rem 1.5rem;
+          font-weight: 500;
+          transition: background .2s, color .2s;
         }
-        .sidebar i {
-            margin-right: 10px;
+        #sidebarMenu .nav-link:hover,
+        #sidebarMenu .nav-link.active {
+          background: #343a40;
+          color: #fff;
         }
+        /* Push logout to bottom */
+        #sidebarMenu .mt-auto {
+          margin-top: auto;
+          padding: 1rem 1.5rem;
+        }
+
+        /* Main content */
         .content-area {
-            margin-left: 240px;
-            padding: 30px;
+          margin-left: 240px;
+          padding: 1.5rem;
+          transition: margin .2s;
         }
+        .content-area.collapsed {
+          margin-left: 0;
+        }
+
+        /* Topbar */
         .topbar {
-            background-color: #fff;
-            border-bottom: 1px solid #dee2e6;
-            padding: 15px 20px;
-            margin-bottom: 30px;
+          background: #fff;
+          border-bottom: 1px solid #dee2e6;
+          padding: .75rem 1rem;
+          margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          border-radius: .25rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+
+        /* Footer */
         footer {
-            margin-top: 50px;
-            font-size: 0.875rem;
-            color: #6c757d;
+          text-align: center;
+          color: #6c757d;
+          margin-top: 2rem;
+          font-size: .875rem;
         }
-        .toast-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 9999;
+
+        /* Mobile overrides */
+        @media (max-width: 767.98px) {
+          #sidebarMenu { display: none; }
+          .content-area {
+            margin: 0; padding: 1rem;
+          }
+          .topbar { display: none; }
         }
     </style>
 </head>
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
+<!-- Desktop Sidebar -->
+<nav id="sidebarMenu" class="d-none d-md-flex">
     <h4>KCI Tutor</h4>
-    <a th:href="@{/tutor/dashboard}"
-       th:classappend="${currentPath == '/tutor/dashboard'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
-    <a th:href="@{/tutor/assignments}"
-       th:classappend="${currentPath == '/tutor/assignments'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-journal-check"></i> Review Assignments
-    </a>
-    <a th:href="@{/tutor/doubts}"
-       th:classappend="${currentPath == '/tutor/doubts'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-question-diamond"></i> Review Doubts
-    </a>
-    <a th:href="@{/tutor/videos}"
-       th:classappend="${currentPath == '/tutor/videos'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-camera-video"></i> My Videos
-    </a>
-    <a th:href="@{/tutor/tests/upload}" th:classappend="${currentPath == '/tutor/tests/upload'} ? 'active'">
-        <i class="bi bi-plus-circle me-2"></i> Upload Test
-    </a>
-    <a th:href="@{/tutor/submissions}"
-       th:classappend="${currentPath == '/tutor/submissions'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-folder2-open"></i> View Test Submissions
-    </a>
-    <a th:href="@{/tutor/availability}"
-       th:classappend="${currentPath == '/tutor/availability'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-calendar-plus"></i> Add Availability
-    </a>
-    <a th:href="@{/tutor/my-slots}"
-       th:classappend="${currentPath == '/tutor/my-slots'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-calendar-event"></i> My Slots
-    </a>
-    <a th:href="@{/tutor/chat}"
-       th:classappend="${currentPath == '/tutor/chat'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-envelope"></i> Student Messages
-    </a>
-    <a th:href="@{/tutor/chat/history}"
-       th:classappend="${currentPath == '/tutor/chat/history'} ? 'active text-white bg-primary' : ''">
-        <i class="bi bi-clock-history"></i> Chat History
-    </a>
-</div>
+    <ul class="nav nav-pills flex-column mb-0">
+        <li class="nav-item">
+            <a th:href="@{/tutor/dashboard}"
+               th:classappend="${currentPath=='/tutor/dashboard'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/assignments}"
+               th:classappend="${currentPath=='/tutor/assignments'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-journal-check me-2"></i> Review Assignments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/doubts}"
+               th:classappend="${currentPath=='/tutor/doubts'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-question-diamond me-2"></i> Review Doubts
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/videos}"
+               th:classappend="${currentPath=='/tutor/videos'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-camera-video me-2"></i> My Videos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/tests/upload}"
+               th:classappend="${currentPath=='/tutor/tests/upload'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-plus-circle me-2"></i> Upload Test
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/submissions}"
+               th:classappend="${currentPath=='/tutor/submissions'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-folder2-open me-2"></i> View Submissions
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/availability}"
+               th:classappend="${currentPath=='/tutor/availability'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-calendar-plus me-2"></i> Add Availability
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/my-slots}"
+               th:classappend="${currentPath=='/tutor/my-slots'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-calendar-event me-2"></i> My Slots
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/chat}"
+               th:classappend="${currentPath=='/tutor/chat'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-envelope me-2"></i> Student Messages
+            </a>
+        </li>
+        <li class="nav-item">
+            <a th:href="@{/tutor/chat/history}"
+               th:classappend="${currentPath=='/tutor/chat/history'} ? ' active' : ''"
+               class="nav-link">
+                <i class="bi bi-clock-history me-2"></i> Chat History
+            </a>
+        </li>
+        <li class="nav-item mt-auto">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn btn-outline-danger w-100">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
 
-<!-- Main Content Area -->
-<div class="content-area">
-    <div class="topbar d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">🎓 Tutor Dashboard</h5>
+<!-- Mobile Navbar -->
+<nav class="navbar navbar-dark bg-primary d-md-none">
+    <div class="container-fluid">
+        <button class="btn btn-outline-light me-2"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar">
+            <i class="bi bi-list fs-3"></i>
+        </button>
+        <span class="navbar-brand mb-0 h5">KCI Tutor</span>
         <form th:action="@{/logout}" method="post" class="mb-0">
-            <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
         </form>
     </div>
+</nav>
 
-    <!-- Dynamic Content -->
-    <section layout:fragment="content"></section>
+<!-- Mobile offcanvas sidebar -->
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">KCI Tutor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0 d-flex flex-column">
+        <ul class="nav nav-pills flex-column mb-3">
+            <li class="nav-item">
+                <a th:href="@{/tutor/dashboard}"
+                   th:classappend="${currentPath=='/tutor/dashboard'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/assignments}"
+                   th:classappend="${currentPath=='/tutor/assignments'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-journal-check me-2"></i> Review Assignments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/doubts}"
+                   th:classappend="${currentPath=='/tutor/doubts'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-question-diamond me-2"></i> Review Doubts
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/videos}"
+                   th:classappend="${currentPath=='/tutor/videos'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-camera-video me-2"></i> My Videos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/tests/upload}"
+                   th:classappend="${currentPath=='/tutor/tests/upload'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-plus-circle me-2"></i> Upload Test
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/submissions}"
+                   th:classappend="${currentPath=='/tutor/submissions'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-folder2-open me-2"></i> View Submissions
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/availability}"
+                   th:classappend="${currentPath=='/tutor/availability'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-calendar-plus me-2"></i> Add Availability
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/my-slots}"
+                   th:classappend="${currentPath=='/tutor/my-slots'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-calendar-event me-2"></i> My Slots
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/chat}"
+                   th:classappend="${currentPath=='/tutor/chat'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-envelope me-2"></i> Student Messages
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tutor/chat/history}"
+                   th:classappend="${currentPath=='/tutor/chat/history'} ? ' active' : ''"
+                   class="nav-link">
+                    <i class="bi bi-clock-history me-2"></i> Chat History
+                </a>
+            </li>
+        </ul>
 
-    <!-- Footer -->
-    <footer class="text-center mt-5">
-        &copy; 2025 TharHost | Tutor Panel
-    </footer>
-</div>
-
-<!-- Toast Notification -->
-<div class="toast-container">
-    <div id="chatToast" class="toast bg-primary text-white" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-primary text-white">
-            <strong class="me-auto">📥 New Student Message</strong>
-            <small>Just now</small>
-            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" id="toastMessageBody">
-            You have new messages!
+        <div class="mt-auto p-3 text-center">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button class="btn btn-outline-danger w-100">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </button>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
+<!-- Main content area -->
+<div class="content-area">
+    <div class="topbar d-none d-md-flex">
+        <h5 class="mb-0 flex-grow-1">🎓 Tutor Dashboard</h5>
+        <button class="btn btn-outline-secondary btn-sm"
+                onclick="document.getElementById('sidebarMenu').classList.toggle('collapsed');">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+
+    <!-- This is where each page’s content goes -->
+    <section layout:fragment="content"></section>
+
+    <footer>&copy; 2025 Kiran Career Institute</footer>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    let lastRepliedCount = 0;
-
-    function showToast(message) {
-        document.getElementById('toastMessageBody').textContent = message;
-        const toast = new bootstrap.Toast(document.getElementById('chatToast'));
-        toast.show();
-    }
-
-    function checkRepliedMessages() {
-        fetch('/api/chat/replied-count')
-            .then(response => response.json())
-            .then(count => {
-                const badge = document.getElementById('repliedCountBadge');
-                if (count > 0) {
-                    badge.textContent = count;
-                    badge.classList.remove('d-none');
-                    if (count > lastRepliedCount) {
-                        showToast(`📩 You have ${count} new replies!`);
-                    }
-                    lastRepliedCount = count;
-                } else {
-                    badge.classList.add('d-none');
-                    lastRepliedCount = 0;
-                }
-            });
-    }
-
-    setInterval(checkRepliedMessages, 30000); // Check every 30 seconds
-    checkRepliedMessages();
-</script>
-
 </body>
 </html>

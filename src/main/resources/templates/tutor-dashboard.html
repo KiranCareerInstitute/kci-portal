@@ -1,4 +1,3 @@
-<!-- templates/tutor-dashboard.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
@@ -7,45 +6,53 @@
     <title>Tutor Dashboard</title>
 </head>
 <body>
-<section layout:fragment="content">
+<section layout:fragment="content" class="container-fluid px-3 px-md-5 py-4">
 
-    <!-- Chat Quick Access -->
-    <div class="mb-3">
-        <a th:href="@{/tutor/chat}" class="btn btn-outline-success btn-sm me-2">
-            📥 Unreplied Messages
-            <span class="badge bg-danger" th:if="${newMessageCount > 0}" th:text="${newMessageCount}"></span>
+    <!-- Unreplied Messages Button -->
+    <div class="d-flex justify-content-end mb-4">
+        <a th:href="@{/tutor/chat}"
+           class="btn btn-outline-success position-relative">
+            <i class="bi bi-envelope-fill me-1"></i>
+            Unreplied Messages
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  th:if="${newMessageCount > 0}"
+                  th:text="${newMessageCount}">0</span>
         </a>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card text-bg-primary">
-                <div class="card-body">
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 text-bg-primary shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-folder2-open fs-2 mb-2"></i>
                     <h6>Total Submissions</h6>
                     <h3 th:text="${totalSubmissions}">0</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-warning">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 text-bg-warning shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock-history fs-2 mb-2"></i>
                     <h6>Pending Reviews</h6>
                     <h3 th:text="${pendingSubmissions}">0</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-success">
-                <div class="card-body">
-                    <h6>Reviewed Submissions</h6>
+        <div class="col-6 col-md-3">
+            <div class="card h-100 text-bg-success shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle-fill fs-2 mb-2"></i>
+                    <h6>Reviewed</h6>
                     <h3 th:text="${reviewedSubmissions}">0</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-danger">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 text-bg-danger shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-question-diamond-fill fs-2 mb-2"></i>
                     <h6>Pending Doubts</h6>
                     <h3 th:text="${pendingDoubtCount}">0</h3>
                 </div>
@@ -53,41 +60,53 @@
         </div>
     </div>
 
-    <!-- Quick Links -->
+    <!-- Quick Action Links -->
     <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card text-bg-success">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-pencil-square fs-2 text-primary mb-2"></i>
                     <h6>Assignments to Review</h6>
                     <h3 th:text="${assignmentCount}">0</h3>
-                    <a th:href="@{/tutor/assignments}" class="btn btn-sm btn-light mt-2">Review Now</a>
+                    <a th:href="@{/tutor/assignments}" class="btn btn-sm btn-primary mt-2">
+                        Review Now
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-warning">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-check fs-2 text-warning mb-2"></i>
                     <h6>Pending Tests</h6>
                     <h3 th:text="${testSubmissionCount}">0</h3>
-                    <a th:href="@{/tutor/tests}" class="btn btn-sm btn-light mt-2">Check Tests</a>
+                    <a th:href="@{/tutor/tests}" class="btn btn-sm btn-warning mt-2">
+                        Check Tests
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-info">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-chat-left-text fs-2 text-info mb-2"></i>
                     <h6>Student Queries</h6>
                     <h3 th:text="${queryCount}">0</h3>
-                    <a th:href="@{/tutor/queries}" class="btn btn-sm btn-light mt-2">View Queries</a>
+                    <a th:href="@{/tutor/queries}" class="btn btn-sm btn-info mt-2">
+                        View Queries
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-danger">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-question-circle-fill fs-2 text-danger mb-2"></i>
                     <h6>Student Doubts</h6>
                     <h3 th:text="${totalDoubtCount}">0</h3>
-                    <a th:href="@{/tutor/doubts}" class="btn btn-sm btn-light mt-2">Review Doubts</a>
+                    <a th:href="@{/tutor/doubts}" class="btn btn-sm btn-danger mt-2">
+                        Review Doubts
+                    </a>
                 </div>
             </div>
         </div>

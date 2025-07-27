@@ -3,110 +3,119 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/admin-layout}">
 <head>
-    <title>Admin Dashboard</title>
+    <title>Review Assignment</title>
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="container mt-5">
+<section layout:fragment="content" class="container-fluid px-3 px-md-5 py-4">
 
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">
-                <i class="bi bi-journal-check me-2"></i> Review Assignment
-            </h4>
-        </div>
-
-        <!-- Success Flash Message -->
-        <div th:if="${message}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <span th:text="${message}">Review submitted successfully!</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <!-- Error Flash Message -->
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <span th:text="${error}">Something went wrong.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <!-- Review Form Card -->
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <form th:action="@{'/admin/assignments/review/' + ${assignment.id}}"
-                      method="post" enctype="multipart/form-data">
-
-                    <!-- Student Name -->
-                    <div class="mb-3 row">
-                        <label class="col-sm-2 col-form-label fw-semibold">👤 Student:</label>
-                        <div class="col-sm-10 pt-2" th:text="${assignment.user.fullName}">
-                            Student Name
-                        </div>
-                    </div>
-
-                    <!-- Assignment Title -->
-                    <div class="mb-3 row">
-                        <label class="col-sm-2 col-form-label fw-semibold">📌 Title:</label>
-                        <div class="col-sm-10 pt-2" th:text="${assignment.title}">
-                            Assignment Title
-                        </div>
-                    </div>
-
-                    <!-- Assignment Description -->
-                    <div class="mb-3 row">
-                        <label class="col-sm-2 col-form-label fw-semibold">📝 Description:</label>
-                        <div class="col-sm-10 pt-2" th:text="${assignment.description}">
-                            Assignment Description
-                        </div>
-                    </div>
-
-                    <!-- Submission File -->
-                    <div class="mb-3 row">
-                        <label class="col-sm-2 col-form-label fw-semibold">📁 Submission:</label>
-                        <div class="col-sm-10 pt-2">
-                            <a th:href="@{'/uploads/assignment/' + ${assignment.filePath}}"
-                               target="_blank" download class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-download me-1"></i>Download Submission
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Upload Solution -->
-                    <div class="mb-3 row">
-                        <label for="solutionFile" class="col-sm-2 col-form-label fw-semibold">📤 Upload Solution:</label>
-                        <div class="col-sm-10">
-                            <input type="file" name="solutionFile" id="solutionFile"
-                                   accept=".pdf,.zip" class="form-control" required>
-                            <small class="text-muted">Only PDF or ZIP files allowed</small>
-                        </div>
-                    </div>
-
-                    <!-- Feedback -->
-                    <div class="mb-4 row">
-                        <label for="feedback" class="col-sm-2 col-form-label fw-semibold">💬 Feedback:</label>
-                        <div class="col-sm-10">
-                            <textarea name="feedback" id="feedback" class="form-control"
-                                      rows="4" placeholder="Write feedback here..." required></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="/admin/assignments" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-1"></i> Back
-                        </a>
-                        <a href="/admin/videos" class="btn btn-secondary">
-                            <i class="bi bi-camera-video me-1"></i> Video Solutions
-                        </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle me-1"></i> Submit Review
-                        </button>
-                    </div>
-
-                </form>
-            </div>
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h4 class="fw-bold mb-3 mb-md-0">
+            <i class="bi bi-journal-check text-primary me-2"></i>
+            Review Assignment
+        </h4>
+        <div>
+            <a th:href="@{/admin/assignments}" class="btn btn-outline-secondary me-2 mb-2 mb-md-0">
+                <i class="bi bi-arrow-left-circle me-1"></i> All Assignments
+            </a>
+            <a th:href="@{/admin/videos}" class="btn btn-outline-primary mb-2 mb-md-0">
+                <i class="bi bi-camera-video me-1"></i> Video Solutions
+            </a>
         </div>
     </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${message}">Review submitted successfully!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}">Something went wrong.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Review Form -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form th:action="@{'/admin/assignments/review/' + ${assignment.id}}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="row g-3">
+
+                <!-- Student Name -->
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">👤 Student</label>
+                    <div class="form-control-plaintext" th:text="${assignment.user.fullName}">
+                        Student Name
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">📌 Title</label>
+                    <div class="form-control-plaintext" th:text="${assignment.title}">
+                        Assignment Title
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <label class="form-label fw-semibold">📝 Description</label>
+                    <div class="border rounded px-3 py-2 bg-light" th:text="${assignment.description}">
+                        Assignment Description
+                    </div>
+                </div>
+
+                <!-- Submission Download -->
+                <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">📁 Submission</label>
+                    <div>
+                        <a th:href="@{'/uploads/assignment/' + ${assignment.filePath}}"
+                           class="btn btn-sm btn-outline-primary"
+                           target="_blank" download>
+                            <i class="bi bi-download me-1"></i>Download Submission
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Upload Solution -->
+                <div class="col-12 col-md-6">
+                    <label for="solutionFile" class="form-label fw-semibold">📤 Upload Solution</label>
+                    <input type="file"
+                           name="solutionFile"
+                           id="solutionFile"
+                           class="form-control"
+                           accept=".pdf,.zip"
+                           required>
+                    <small class="text-muted">PDF or ZIP only</small>
+                </div>
+
+                <!-- Feedback -->
+                <div class="col-12">
+                    <label for="feedback" class="form-label fw-semibold">💬 Feedback</label>
+                    <textarea name="feedback"
+                              id="feedback"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Write feedback here..."
+                              required></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="bi bi-check-circle-fill me-1"></i> Submit Review
+                    </button>
+                    <a th:href="@{/admin/assignments}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </section>
 </body>
 </html>

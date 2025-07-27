@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,10 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import org.springframework.util.StringUtils;
 
 import static com.kci.portal.constants.FileConstants.UPLOAD_DIR;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,8 +44,8 @@ public class DashboardController {
     @Autowired private StudentQueryRepository studentQueryRepository;
     @Autowired
 
-    @Value("${upload.path.assignment}")
-    private String assignmentUploadPath;
+    @Value("${assignment.upload.dir}")
+    private String assignmentUploadDir;
 
     private void addLoggedInUserToModel(Model model, Authentication auth) {
         if (auth != null && auth.isAuthenticated()) {
@@ -221,34 +226,45 @@ public class DashboardController {
 
     @PostMapping("/student/assignments/upload")
     public String submitAssignment(@ModelAttribute Assignment assignment,
-                                   @RequestParam MultipartFile file,
+                                   @RequestParam("file") MultipartFile file,
                                    Authentication auth,
                                    RedirectAttributes redirectAttributes) {
-        if (auth == null || !auth.isAuthenticated()) return "redirect:/login";
-
+        if (auth == null || !auth.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        User user = getCurrentUser(auth);
         try {
-            User user = getCurrentUser(auth);
+            if (file != null && !file.isEmpty()) {
+                // Resolve and create the upload directory
+                Path uploadPath = Paths.get(assignmentUploadDir)
+                        .toAbsolutePath()
+                        .normalize();
+                Files.createDirectories(uploadPath);
 
-            if (!file.isEmpty()) {
-                File uploadPath = new File(assignmentUploadPath);
-                if (!uploadPath.exists()) uploadPath.mkdirs();
+                // Generate a safe filename
+                String filename = System.currentTimeMillis() + "_" +
+                        StringUtils.cleanPath(file.getOriginalFilename());
+                Path targetFile = uploadPath.resolve(filename);
 
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                file.transferTo(new File(uploadPath, fileName));
-                assignment.setFilePath(fileName);
+                // Transfer file
+                file.transferTo(targetFile.toFile());
+
+                // Store filename in entity
+                assignment.setFilePath(filename);
             }
-
             assignment.setUser(user);
             assignmentRepository.save(assignment);
-            redirectAttributes.addFlashAttribute("message", "Assignment uploaded successfully!");
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("message", "Failed to upload assignment.");
-            e.printStackTrace();
-        }
 
+            redirectAttributes.addFlashAttribute("message",
+                    "Assignment uploaded successfully!");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("message",
+                    "Failed to upload assignment: " + ex.getClass().getSimpleName()
+                            + " – " + ex.getMessage());
+        }
         return "redirect:/student/assignments/upload";
     }
-
     @GetMapping("/student/assignment/feedback/{id}")
     public String viewAssignmentFeedback(@PathVariable Long id, Model model, Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) return "redirect:/login";

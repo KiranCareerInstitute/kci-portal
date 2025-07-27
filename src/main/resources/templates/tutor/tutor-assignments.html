@@ -1,4 +1,3 @@
-<!-- templates/tutor-dashboard.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
@@ -7,56 +6,57 @@
     <title>Tutor Dashboard</title>
 </head>
 <body>
-<section layout:fragment="content">
+<section layout:fragment="content" class="container-fluid px-3 px-md-5 py-4">
 
-    <!-- Reviewed Assignments Section -->
-    <div class="container-fluid px-3">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0">
-                <i class="bi bi-journal-check me-2"></i> Reviewed Assignments
-            </h4>
-            <a href="/tutor/videos" class="btn btn-primary">
-                <i class="bi bi-camera-video"></i> Upload Video Solution
-            </a>
-        </div>
+    <!-- Header with Action -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h4 class="fw-bold mb-3 mb-md-0">
+            <i class="bi bi-journal-check text-primary me-2"></i>
+            Reviewed Assignments
+        </h4>
+        <a th:href="@{/tutor/videos}" class="btn btn-primary">
+            <i class="bi bi-camera-video me-1"></i> Upload Video Solution
+        </a>
+    </div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div th:if="${#lists.isEmpty(assignments)}" class="alert alert-info text-center mb-0">
-                    <i class="bi bi-info-circle me-1"></i> No reviewed assignments available.
-                </div>
-
-                <div th:unless="${#lists.isEmpty(assignments)}">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle">
-                            <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Student</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>File</th>
-                                <th>Feedback</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="a : ${assignments}">
-                                <td th:text="${a.id}">1</td>
-                                <td th:text="${a.user.fullName}">Student Name</td>
-                                <td th:text="${a.title}">Assignment Title</td>
-                                <td th:text="${a.description}">Description</td>
-                                <td>
-                                    <a th:href="@{'/uploads/assignment/' + ${a.filePath}}" target="_blank" download
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-download me-1"></i>Download
-                                    </a>
-                                </td>
-                                <td th:text="${a.feedback}">Feedback</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Reviewed Assignments Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(assignments)}" class="alert alert-info text-center m-0 py-4">
+                <i class="bi bi-info-circle-fill me-1"></i>
+                No reviewed assignments available.
+            </div>
+            <!-- Table of Assignments -->
+            <div th:unless="${#lists.isEmpty(assignments)}" class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Submission</th>
+                        <th>Feedback</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a, stat : ${assignments}">
+                        <td th:text="${stat.count}">1</td>
+                        <td th:text="${a.user.fullName}">Student Name</td>
+                        <td th:text="${a.title}">Assignment Title</td>
+                        <td th:text="${a.description}">Assignment Description</td>
+                        <td class="text-center">
+                            <a th:href="@{'/uploads/assignment/' + ${a.filePath}}"
+                               class="btn btn-sm btn-outline-primary"
+                               target="_blank" download>
+                                <i class="bi bi-download me-1"></i>Download
+                            </a>
+                        </td>
+                        <td th:text="${a.feedback ?: '—'}" class="text-muted">Feedback text</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

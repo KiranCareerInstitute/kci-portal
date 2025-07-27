@@ -27,15 +27,16 @@ import org.springframework.security.core.Authentication;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import java.io.IOException;
-import java.nio.file.Files;
+import org.springframework.beans.factory.annotation.Value;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Files;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
-import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/admin")
@@ -53,6 +54,8 @@ public class AdminController {
 
     @Value("${upload.path.assignment}")
     private String assignmentUploadPath;
+    @Value("${assignment.upload.dir}")
+    private String assignmentUploadDir;
 
     @Value("${upload.path.tests}")
     private String testUploadPath;
@@ -192,32 +195,41 @@ public class AdminController {
         Assignment assignment = optionalAssignment.get();
 
         try {
-            Path uploadsDir = Paths.get(assignmentUploadPath);
+            // Resolve & create the directory if it doesn't exist
+            Path uploadsDir = Paths.get(assignmentUploadPath)
+                    .toAbsolutePath()
+                    .normalize();
             Files.createDirectories(uploadsDir);
 
-            if (!solutionFile.isEmpty()) {
-                String fileName = System.currentTimeMillis() + "_" + solutionFile.getOriginalFilename();
+            if (solutionFile != null && !solutionFile.isEmpty()) {
+                // Clean the original filename
+                String originalFilename = StringUtils.cleanPath(solutionFile.getOriginalFilename());
+                // Prepend timestamp to avoid collisions
+                String fileName = System.currentTimeMillis() + "_" + originalFilename;
                 Path filePath = uploadsDir.resolve(fileName);
+
+                // Save the file to disk
                 solutionFile.transferTo(filePath.toFile());
+
+                // Store the relative filename in the entity
                 assignment.setSolutionPath(fileName);
             }
 
+            // Save feedback & status
             assignment.setFeedback(feedback);
             assignment.setStatus("Reviewed");
             assignmentRepository.save(assignment);
 
-            // ✅ Flash message added
             redirectAttributes.addFlashAttribute("message", "Review submitted successfully.");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Error uploading file.");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("error",
+                    "Error uploading solution file: " + ex.getMessage());
         }
 
-        // ✅ Redirects back to the same review page to show the message
+        // Redirect back to the review page
         return "redirect:/admin/assignments/review/" + id;
     }
-
     @GetMapping("/results/upload")
     public String showUploadResultForm(Model model) {
         model.addAttribute("students", userRepository.findAll().stream()
