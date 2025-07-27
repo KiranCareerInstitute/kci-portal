@@ -7,12 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,53 +34,73 @@ public class StudentDoubtController {
     @Autowired
     private UserRepository userRepository;
 
+    /** matches upload.path.doubts in application.properties */
     @Value("${upload.path.doubts}")
-    private String doubtUploadPath;
+    private String doubtUploadDir;
 
-    // ✅ GET: Doubt submission form
     @GetMapping("/upload")
     public String showUploadForm(Model model) {
         model.addAttribute("doubt", new StudentDoubt());
         return "student/student-upload-doubt";
     }
 
-    // ✅ POST: Handle submission
     @PostMapping("/upload")
-    public String uploadDoubt(@ModelAttribute StudentDoubt doubt,
-                              @RequestParam("file") MultipartFile file,
-                              Principal principal,
-                              RedirectAttributes redirectAttributes) {
-        try {
-            String studentEmail = principal.getName();
-            String originalFilename = file.getOriginalFilename();
-            String uniqueName = UUID.randomUUID() + "_" + originalFilename;
-            File uploadDir = new File(doubtUploadPath + File.separator + "doubts");
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
-            File destFile = new File(doubtUploadPath, uniqueName); // correct path
-            file.transferTo(destFile);
+    public String uploadDoubt(
+            @ModelAttribute StudentDoubt doubt,
+            @RequestParam("file") MultipartFile file,
+            Principal principal,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Please select a file to upload.");
+            return "redirect:/student/doubts/upload";
+        }
 
-            doubt.setStudentEmail(studentEmail);
-            doubt.setFileName(originalFilename);
-            doubt.setFilePath("doubts/" + uniqueName);
+        try {
+            // 1) Resolve and create upload dir
+            Path uploadPath = Paths.get(doubtUploadDir)
+                    .toAbsolutePath()
+                    .normalize();
+            Files.createDirectories(uploadPath);
+
+            // 2) Generate safe filename
+            String originalName = StringUtils.cleanPath(
+                    file.getOriginalFilename()
+            );
+            String filename = System.currentTimeMillis()
+                    + "_" + UUID.randomUUID()
+                    + "_" + originalName;
+
+            // 3) Copy file to target
+            Path targetFile = uploadPath.resolve(filename);
+            file.transferTo(targetFile.toFile());
+
+            // 4) Persist metadata
+            doubt.setStudentEmail(principal.getName());
+            doubt.setFileName(originalName);
+            doubt.setFilePath(filename);
             doubt.setSubmittedAt(LocalDateTime.now());
             doubt.setStatus("PENDING");
-
             doubtRepository.save(doubt);
+
             redirectAttributes.addFlashAttribute("success", "✅ Doubt submitted successfully!");
         } catch (IOException e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "❌ Failed to upload file. Try again.");
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "❌ Failed to upload file: " + e.getMessage()
+            );
         }
+
         return "redirect:/student/doubts/upload";
     }
-    // ✅ Show all doubts submitted by the logged-in student
+
     @GetMapping("/my")
     public String viewMyDoubts(Model model, Principal principal) {
-        String studentEmail = principal.getName();
-        model.addAttribute("doubts", doubtRepository.findByStudentEmailOrderBySubmittedAtDesc(studentEmail));
-        return "student/student-my-doubts";  // ✅ This HTML page must exist
+        model.addAttribute(
+                "doubts",
+                doubtRepository.findByStudentEmailOrderBySubmittedAtDesc(principal.getName())
+        );
+        return "student/student-my-doubts";
     }
-
 }
