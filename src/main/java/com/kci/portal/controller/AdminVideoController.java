@@ -17,10 +17,11 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.kci.portal.model.VideoFeedback;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,93 +31,92 @@ import java.util.UUID;
 @RequestMapping("/admin/videos")
 public class AdminVideoController {
 
-    @Autowired
-    private VideoSolutionRepository videoSolutionRepository;
+    @Autowired private VideoSolutionRepository videoSolutionRepository;
+    @Autowired private AssignmentRepository     assignmentRepository;
+    @Autowired private UserRepository           userRepository;
+    @Autowired private VideoFeedbackRepository  videoFeedbackRepository;
+    @Autowired private StudentDoubtRepository   studentDoubtRepository;
 
-    @Autowired
-    private AssignmentRepository assignmentRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private VideoFeedbackRepository videoFeedbackRepository;
-
-    @Autowired
-    private StudentDoubtRepository studentDoubtRepository;
-
+    /** physical folder where videos are stored */
     @Value("${upload.path.videos}")
     private String videosUploadPath;
+
+    /** URL path your ResourceHandler will serve from that folder */
+    private static final String UPLOAD_URL_PREFIX = "/uploads/videos";
 
     @GetMapping
     public String showFilteredOrAllVideos(
             @RequestParam(required = false) String uploaderType,
-            @RequestParam(required = false) Long assignmentId,
+            @RequestParam(required = false) Long   assignmentId,
             Model model) {
 
-        List<VideoSolution> videos;
-        if ((uploaderType != null && !uploaderType.isEmpty()) || assignmentId != null) {
-            videos = videoSolutionRepository.findFiltered(uploaderType, assignmentId);
-        } else {
-            videos = videoSolutionRepository.findAll();
-        }
+        List<VideoSolution> videos = (uploaderType!=null||assignmentId!=null)
+                ? videoSolutionRepository.findFiltered(uploaderType, assignmentId)
+                : videoSolutionRepository.findAll();
 
-        List<Assignment> assignments = assignmentRepository.findAll();
-        List<StudentDoubt> doubts = studentDoubtRepository.findAll();
-
-        model.addAttribute("videos", videos);
-        model.addAttribute("assignments", assignments);
-        model.addAttribute("doubts", doubts);
-        model.addAttribute("uploaderType", uploaderType);
-        model.addAttribute("selectedAssignmentId", assignmentId);
-
+        model.addAttribute("videos",              videos);
+        model.addAttribute("assignments",         assignmentRepository.findAll());
+        model.addAttribute("doubts",              studentDoubtRepository.findAll());
+        model.addAttribute("uploaderType",        uploaderType);
+        model.addAttribute("selectedAssignmentId",assignmentId);
+        model.addAttribute("uploadUrlPrefix",     UPLOAD_URL_PREFIX);
         return "admin/admin-video-solutions";
     }
 
     @PostMapping("/upload")
     public String uploadVideoSolution(
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam(name = "assignmentId", required = false) Long assignmentId,
-            @RequestParam(name = "doubtId", required = false) Long doubtId,
-            @RequestParam("videoFile") MultipartFile videoFile,
-            Principal principal) throws IOException {
+            @RequestParam("title")       String        title,
+            @RequestParam("description") String        description,
+            @RequestParam(name="assignmentId", required=false) Long  assignmentId,
+            @RequestParam(name="doubtId",      required=false) Long  doubtId,
+            @RequestParam("videoFile") MultipartFile        videoFile,
+            Principal                           principal
+    ) throws IOException {
 
-        VideoSolution videoSolution = new VideoSolution();
-        videoSolution.setTitle(title);
-        videoSolution.setDescription(description);
-        videoSolution.setCreatedAt(LocalDateTime.now());
+        VideoSolution vs = new VideoSolution();
+        vs.setTitle(title);
+        vs.setDescription(description);
+        vs.setCreatedAt(LocalDateTime.now());
 
-        // Use actual logged-in user as uploader
-        userRepository.findByEmail(principal.getName()).ifPresent(videoSolution::setUploadedBy);
+        // who uploaded it
+        userRepository.findByEmail(principal.getName())
+                .ifPresent(vs::setUploadedBy);
 
-        // Link assignment if present
-        if (assignmentId != null) {
-            assignmentRepository.findById(assignmentId).ifPresent(videoSolution::setAssignment);
-        }
+        // link assignment & doubt
+        if (assignmentId != null)
+            assignmentRepository.findById(assignmentId)
+                    .ifPresent(vs::setAssignment);
 
-        // Link doubt if present
-        if (doubtId != null) {
-            studentDoubtRepository.findById(doubtId).ifPresent(doubt -> {
-                videoSolution.setDoubt(doubt);
-                if (doubt.getUser() != null) {
-                    videoSolution.setStudent(doubt.getUser());
-                }
+        if (doubtId != null)
+            studentDoubtRepository.findById(doubtId).ifPresent(d -> {
+                vs.setDoubt(d);
+                if (d.getUser() != null)
+                    vs.setStudent(d.getUser());
             });
-        }
 
-        // Handle file
+        // ─── handle file storage ──────────────────────────────────────────
         if (!videoFile.isEmpty()) {
-            String filename = UUID.randomUUID() + "_" + StringUtils.cleanPath(videoFile.getOriginalFilename());
-            File uploadPath = new File(videosUploadPath);
-            if (!uploadPath.exists()) uploadPath.mkdirs();
+            // ensure folder exists
+            Path uploadDir = Paths.get(videosUploadPath)
+                    .toAbsolutePath()
+                    .normalize();
+            Files.createDirectories(uploadDir);
 
-            File destFile = new File(uploadPath, filename);
-            videoFile.transferTo(destFile);
-            videoSolution.setVideoPath(filename);
+            // build safe, unique filename
+            String originalName = StringUtils.cleanPath(videoFile.getOriginalFilename());
+            String uniqueName   = System.currentTimeMillis()
+                    + "_" + UUID.randomUUID()
+                    + "_" + originalName;
+
+            // copy to disk
+            Path target = uploadDir.resolve(uniqueName);
+            videoFile.transferTo(target.toFile());
+
+            vs.setVideoPath(uniqueName);
         }
+        // ────────────────────────────────────────────────────────────────
 
-        videoSolutionRepository.save(videoSolution);
+        videoSolutionRepository.save(vs);
         return "redirect:/admin/videos";
     }
 
@@ -128,9 +128,11 @@ public class AdminVideoController {
 
     @GetMapping("/video-feedback/{videoId}")
     public String viewFeedbackForVideo(@PathVariable Long videoId, Model model) {
-        VideoSolution video = videoSolutionRepository.findById(videoId).orElseThrow();
-        model.addAttribute("video", video);
+        VideoSolution video = videoSolutionRepository.findById(videoId)
+                .orElseThrow();
+        model.addAttribute("video",     video);
         model.addAttribute("feedbacks", video.getFeedbackList());
+        model.addAttribute("uploadUrlPrefix", UPLOAD_URL_PREFIX);
         return "admin/video_feedback_detail";
     }
 
@@ -138,8 +140,15 @@ public class AdminVideoController {
     @Transactional
     public String submitAdminResponse(@PathVariable Long feedbackId,
                                       @RequestParam String adminResponse) {
-        VideoFeedback feedback = videoFeedbackRepository.findById(feedbackId).orElseThrow();
-        feedback.setAdminResponse(adminResponse);
-        return "redirect:/admin/videos/video-feedback/" + feedback.getVideoSolution().getId();
+        videoFeedbackRepository.findById(feedbackId)
+                .ifPresent(f -> {
+                    f.setAdminResponse(adminResponse);
+                    // no need to call save() because of @Transactional
+                });
+        Long vid = videoFeedbackRepository.findById(feedbackId)
+                .get()
+                .getVideoSolution()
+                .getId();
+        return "redirect:/admin/videos/video-feedback/" + vid;
     }
 }
