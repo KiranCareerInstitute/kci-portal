@@ -214,4 +214,21 @@ public class StudentTestController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    // in StudentTestController
+    @PostMapping("/tests/feedback/{submissionId}")
+    public String submitTestFeedback(@PathVariable Long submissionId,
+                                     @RequestParam String studentFeedback,
+                                     Principal principal,
+                                     RedirectAttributes ra) {
+        Optional<TestSubmission> opt = testSubmissionRepository.findById(submissionId);
+        if (opt.isEmpty() || !opt.get().getUser().getEmail().equals(principal.getName())) {
+            ra.addFlashAttribute("error", "Cannot leave feedback.");
+            return "redirect:/student/tests/submissions";
+        }
+        TestSubmission sub = opt.get();
+        sub.setStudentFeedback(studentFeedback);
+        testSubmissionRepository.save(sub);
+        ra.addFlashAttribute("success", "Thanks for your feedback!");
+        return "redirect:/student/tests/submissions";
+    }
 }

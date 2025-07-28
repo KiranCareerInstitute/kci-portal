@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title layout:fragment="title">Tutor Review Details — Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container py-4">
+
+        <!-- Back Button and Header -->
+        <div class="d-flex align-items-center mb-4">
+            <a th:href="@{/admin/tests/tutor-reviews}" class="btn btn-outline-secondary btn-sm me-2">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <h4 class="m-0"><i class="bi bi-eye me-2"></i> Tutor Review Details</h4>
+        </div>
+
+        <!-- Error or Not Found -->
+        <div th:if="${error}" class="alert alert-danger mb-4" th:text="${error}"></div>
+        <div th:if="${submission == null}" class="alert alert-warning">
+            Submission not found or does not exist.
+        </div>
+
+        <!-- Review Card -->
+        <div th:if="${submission != null}" class="card shadow-sm">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <strong>Student:</strong>
+                        <span th:if="${submission.user != null}" th:text="${submission.user.fullName}">-</span>
+                        <span th:unless="${submission.user != null}" class="text-muted">Unknown</span>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <strong>Test:</strong>
+                        <span th:if="${submission.test != null}" th:text="${submission.test.title}">-</span>
+                        <span th:unless="${submission.test != null}" class="text-muted">Unknown</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-2">
+                        <strong>Marks:</strong>
+                        <span th:if="${submission.marks != null}" th:text="${submission.marks}">-</span>
+                        <span th:unless="${submission.marks != null}" class="text-muted">-</span>
+                    </div>
+                    <div class="col-md-8 mb-2">
+                        <strong>Feedback:</strong>
+                        <span th:if="${submission.feedback != null}" th:text="${submission.feedback}">-</span>
+                        <span th:unless="${submission.feedback != null}" class="text-muted">-</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <strong>Reviewed On:</strong>
+                        <span th:if="${submission.reviewedAt != null}" th:text="${#temporals.format(submission.reviewedAt, 'dd MMM yyyy, hh:mm a')}">-</span>
+                        <span th:unless="${submission.reviewedAt != null}" class="text-muted">-</span>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <strong>Submitted At:</strong>
+                        <span th:if="${submission.submittedAt != null}" th:text="${#temporals.format(submission.submittedAt, 'dd MMM yyyy, hh:mm a')}">-</span>
+                        <span th:unless="${submission.submittedAt != null}" class="text-muted">-</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <strong>Test Paper:</strong>
+                        <span th:if="${submission.test != null and submission.test.pdfPath != null}">
+                            <a th:href="@{'/admin/tests/pdf/' + ${submission.test.pdfPath}}"
+                               target="_blank"
+                               class="btn btn-outline-secondary btn-sm ms-1">
+                                <i class="bi bi-file-earmark-pdf"></i> View PDF
+                            </a>
+                        </span>
+                        <span th:unless="${submission.test != null and submission.test.pdfPath != null}" class="text-muted ms-2">Not Available</span>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <strong>Student Submission:</strong>
+                        <span th:if="${submission.fileName != null}">
+                            <a th:href="@{'/admin/download/' + ${submission.fileName}}"
+                               class="btn btn-outline-primary btn-sm ms-1"
+                               target="_blank">
+                                <i class="bi bi-download"></i> Download Answer
+                            </a>
+                        </span>
+                        <span th:unless="${submission.fileName != null}" class="text-muted ms-2">Not Uploaded</span>
+                    </div>
+                </div>
+                <div class="mb-2" th:if="${submission.studentFeedback != null}">
+                    <strong>Student Feedback:</strong>
+                    <span th:text="${submission.studentFeedback}" class="ms-2"></span>
+                </div>
+                <div class="text-end text-muted small mt-3" th:if="${submission.lastReviewedAt != null}">
+                    Last edited by <span th:text="${submission.lastReviewedBy}">Admin</span>
+                    on <span th:text="${#temporals.format(submission.lastReviewedAt, 'dd MMM yyyy, hh:mm a')}">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

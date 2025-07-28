@@ -29,6 +29,47 @@ public class TestSubmission {
 
     private LocalDateTime submittedAt;
 
+    @Column(length=1024)
+    private String studentFeedback;
+
+    public String getStudentFeedback() { return studentFeedback; }
+    public void setStudentFeedback(String studentFeedback) { this.studentFeedback = studentFeedback; }
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    public LocalDateTime getReviewedAt() { return reviewedAt; }
+    public void setReviewedAt(LocalDateTime reviewedAt) { this.reviewedAt = reviewedAt; }
+
+    @Column(name = "last_reviewed_by")
+    private String lastReviewedBy;
+
+    @Column(name = "last_reviewed_at")
+    private LocalDateTime lastReviewedAt;
+
+    public String getLastReviewedBy() { return lastReviewedBy; }
+    public void setLastReviewedBy(String s) { this.lastReviewedBy = s; }
+    public LocalDateTime getLastReviewedAt() { return lastReviewedAt; }
+    public void setLastReviewedAt(LocalDateTime t) { this.lastReviewedAt = t; }
+
+    @Column(length = 1024)
+    private String tutorReply;
+
+    @Column(length = 1024)
+    private String adminReply;
+
+    public String getTutorReply() { return tutorReply; }
+    public void setTutorReply(String tutorReply) { this.tutorReply = tutorReply; }
+
+    public String getAdminReply() { return adminReply; }
+    public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
+    // In TestSubmission.java
+    @Column(name = "admin_feedback")
+    private String adminFeedback;
+
+    public String getAdminFeedback() { return adminFeedback; }
+    public void setAdminFeedback(String adminFeedback) { this.adminFeedback = adminFeedback; }
+
     // Getters & Setters
     public Long getId() { return id; }
 

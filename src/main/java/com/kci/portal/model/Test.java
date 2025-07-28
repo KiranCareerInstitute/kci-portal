@@ -33,6 +33,15 @@ public class Test {
         this.createdAt = LocalDateTime.now();
     }
 
+    @ManyToOne
+    @JoinColumn(name="created_by")
+    private User createdBy; // or private Tutor createdBy;
+    public User getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
     // --- Getters and Setters ---
 
     public Long getId() {

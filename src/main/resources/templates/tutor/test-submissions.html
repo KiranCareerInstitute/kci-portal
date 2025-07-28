@@ -29,7 +29,10 @@
                 <th>File</th>
                 <th>Marks</th>
                 <th>Feedback</th>
-                <th>Action</th>
+                <th>Review</th>
+                <th>Student Feedback</th>
+                <th>Reply to Student</th>
+                <th>Your Previous Reply</th>
             </tr>
             </thead>
             <tbody>
@@ -37,9 +40,7 @@
                 <td th:text="${iterStat.count}">1</td>
                 <td th:text="${sub.user.fullName}">Student Name</td>
                 <td th:text="${sub.test.title}">Test Title</td>
-                <td th:text="${#temporals.format(sub.submittedAt,'dd-MM-yyyy HH:mm')}">
-                    01-07-2025 14:30
-                </td>
+                <td th:text="${#temporals.format(sub.submittedAt,'dd-MM-yyyy HH:mm')}">01-07-2025 14:30</td>
                 <td>
                     <a th:href="@{/tutor/tests/pdf/{f}(f=${sub.fileName})}"
                        target="_blank"
@@ -49,17 +50,47 @@
                 </td>
                 <td th:text="${sub.marks != null ? sub.marks : '-'}">-</td>
                 <td th:text="${sub.feedback != null ? sub.feedback : '-'}">-</td>
+
+                <!-- Review Button -->
                 <td>
                     <a th:href="@{/tutor/tests/submissions/review/{id}(id=${sub.id})}"
                        class="btn btn-sm btn-primary">
                         <i class="bi bi-pencil-square"></i> Review
                     </a>
                 </td>
+
+                <!-- Student Feedback, if any -->
+                <td>
+                    <div th:if="${sub.studentFeedback != null}">
+                        <span class="badge bg-info text-dark">
+                            <i class="bi bi-chat-left-text"></i>
+                            <span th:text="${sub.studentFeedback}">Student feedback here</span>
+                        </span>
+                    </div>
+                </td>
+
+                <!-- Tutor Reply Form -->
+                <td>
+                    <form th:action="@{/tutor/tests/submissions/reply/{id}(id=${sub.id})}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <textarea name="reply" class="form-control" rows="2" placeholder="Your reply"></textarea>
+                        <button type="submit" class="btn btn-sm btn-primary mt-1">Send Reply</button>
+                    </form>
+                </td>
+
+                <!-- Show previous reply -->
+                <td>
+                    <div th:if="${sub.tutorReply != null}">
+                        <span class="badge bg-success text-light">
+                            <i class="bi bi-reply"></i>
+                            <span th:text="${sub.tutorReply}">Previous reply</span>
+                        </span>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
-
 </section>
 </body>
 </html>

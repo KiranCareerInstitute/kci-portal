@@ -13,7 +13,7 @@ import java.util.List;
 public interface TestSubmissionRepository extends JpaRepository<TestSubmission, Long> {
     List<TestSubmission> findByUser(User user);
     List<TestSubmission> findByTest(Test test);
-
+    List<TestSubmission> findByTestIn(List<Test> tests);
     // New methods
     List<TestSubmission> findByMarksIsNull();       // Pending review
     List<TestSubmission> findByMarksIsNotNull();    // Reviewed
@@ -49,4 +49,6 @@ public interface TestSubmissionRepository extends JpaRepository<TestSubmission, 
             @Param("status") String status,
             Pageable pageable
     );
+    List<TestSubmission> findByStudentFeedbackIsNotNull();
+
 }

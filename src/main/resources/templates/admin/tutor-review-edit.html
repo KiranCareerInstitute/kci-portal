@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      lang="en"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title layout:fragment="title">Edit Tutor Review</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container py-4">
+        <div class="d-flex align-items-center mb-4">
+            <a th:href="@{/admin/tests/tutor-reviews}" class="btn btn-outline-secondary btn-sm me-2">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <h4 class="m-0"><i class="bi bi-pencil-square me-2"></i> Edit Tutor Review</h4>
+        </div>
+        <div th:if="${error}" class="alert alert-danger mb-4" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success mb-4" th:text="${success}"></div>
+
+        <form th:action="@{'/admin/tests/tutor-reviews/edit/' + ${submission.id}}" method="post" class="card p-4 shadow-sm">
+            <div class="mb-3">
+                <label class="form-label"><strong>Student:</strong></label>
+                <div th:text="${submission.user.fullName}">-</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><strong>Test:</strong></label>
+                <div th:text="${submission.test.title}">-</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Marks</label>
+                    <input type="number" min="0" class="form-control" name="marks" th:value="${submission.marks}" required>
+                </div>
+                <div class="col-md-8 mb-3">
+                    <label class="form-label">Feedback</label>
+                    <textarea class="form-control" name="feedback" rows="2" th:text="${submission.feedback}"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i> Save Changes
+            </button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface TestRepository extends JpaRepository<Test, Long> {
     List<Test> findAllByUploadedByEmail(String email);
-    List<Test> findAllByUploadedBy_Email(String email); // preferred
+    List<Test> findAllByUploadedBy_Email(String email);
+    List<Test> findByCreatedBy(User tutor);
 }

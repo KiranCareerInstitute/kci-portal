@@ -457,7 +457,7 @@ public class AdminController {
     @GetMapping("/review-results")
     public String reviewStudentSubmissions(Model model) {
         model.addAttribute("submissions", testSubmissionRepository.findAll());
-        return "admin-review-results";
+        return "admin/review-results";
     }
 
     @PostMapping("/reply-result")
@@ -502,5 +502,105 @@ public class AdminController {
         model.addAttribute("students", chatMessageRepository.findStudentsInvolvedInChat());
         model.addAttribute("tutors",   chatMessageRepository.findTutorsInvolvedInChat());
         return "admin/admin-active-chat-threads";
+    }
+    // in AdminController
+    @GetMapping("/tests/tutor-reviews")
+    public String viewTutorReviews(Model model) {
+        model.addAttribute("reviews",
+                testSubmissionRepository.findByMarksIsNotNull());
+        model.addAttribute("currentPath", "/admin/tests/tutor-reviews");
+        return "admin/tutor-reviews";
+    }
+    // in AdminController
+    @GetMapping("/tests/student-feedback")
+    public String viewStudentFeedback(Model model) {
+        model.addAttribute("feedbacks",
+                testSubmissionRepository.findByStudentFeedbackIsNotNull());
+        model.addAttribute("currentPath", "/admin/tests/student-feedback");
+        return "admin/admin-student-feedback";
+    }
+    @GetMapping("/tests/tutor-reviews/view/{id}")
+    public String viewTutorReviewDetail(@PathVariable Long id, Model model) {
+        Optional<TestSubmission> submission = testSubmissionRepository.findById(id);
+        if (submission.isPresent()) {
+            model.addAttribute("submission", submission.get());
+        } else {
+            model.addAttribute("error", "Submission not found.");
+            model.addAttribute("submission", null);
+        }
+        model.addAttribute("currentPath", "/admin/tests/tutor-reviews");
+        return "admin/tutor-review-detail";
+    }
+    @PostMapping("/tests/tutor-reviews/review/{id}")
+    public String reviewTutorSubmission(
+            @PathVariable Long id,
+            @RequestParam int marks,
+            @RequestParam String feedback,
+            RedirectAttributes ra
+    ) {
+        Optional<TestSubmission> opt = testSubmissionRepository.findById(id);
+        if (opt.isPresent()) {
+            TestSubmission sub = opt.get();
+            sub.setMarks(marks);
+            sub.setFeedback(feedback);
+            sub.setReviewedAt(LocalDateTime.now());
+            testSubmissionRepository.save(sub);
+            ra.addFlashAttribute("success", "Review submitted successfully!");
+        } else {
+            ra.addFlashAttribute("error", "Submission not found.");
+        }
+        return "redirect:/admin/tests/tutor-reviews/view/" + id;
+    }
+    // Show edit form
+    @GetMapping("/tests/tutor-reviews/edit/{id}")
+    public String showEditTutorReview(@PathVariable Long id, Model model, RedirectAttributes ra) {
+        Optional<TestSubmission> opt = testSubmissionRepository.findById(id);
+        if (opt.isEmpty()) {
+            ra.addFlashAttribute("error", "Submission not found.");
+            return "redirect:/admin/tests/tutor-reviews";
+        }
+        model.addAttribute("submission", opt.get());
+        model.addAttribute("currentPath", "/admin/tests/tutor-reviews");
+        return "admin/tutor-review-edit";
+    }
+
+    // Handle edit POST
+    @PostMapping("/tests/tutor-reviews/edit/{id}")
+    public String submitEditTutorReview(@PathVariable Long id,
+                                        @RequestParam int marks,
+                                        @RequestParam String feedback,
+                                        Authentication auth,
+                                        RedirectAttributes ra) {
+        Optional<TestSubmission> opt = testSubmissionRepository.findById(id);
+        if (opt.isPresent()) {
+            TestSubmission sub = opt.get();
+            sub.setMarks(marks);
+            sub.setFeedback(feedback);
+            sub.setReviewedAt(LocalDateTime.now());
+            // New lines:
+            sub.setLastReviewedBy(auth.getName());
+            sub.setLastReviewedAt(LocalDateTime.now());
+            testSubmissionRepository.save(sub);
+            ra.addFlashAttribute("success", "Review updated successfully!");
+            return "redirect:/admin/tests/tutor-reviews/view/" + id;
+        } else {
+            ra.addFlashAttribute("error", "Submission not found.");
+            return "redirect:/admin/tests/tutor-reviews";
+        }
+    }
+    @PostMapping("/tests/tutor-reviews/reply/{id}")
+    public String replyToStudentReview(@PathVariable Long id,
+                                       @RequestParam String reply,
+                                       RedirectAttributes ra) {
+        Optional<TestSubmission> opt = testSubmissionRepository.findById(id);
+        if (opt.isPresent()) {
+            TestSubmission sub = opt.get();
+            sub.setAdminReply(reply);
+            testSubmissionRepository.save(sub);
+            ra.addFlashAttribute("success", "Reply sent to student!");
+        } else {
+            ra.addFlashAttribute("error", "Submission not found.");
+        }
+        return "redirect:/admin/tests/tutor-reviews/view/" + id;
     }
 }

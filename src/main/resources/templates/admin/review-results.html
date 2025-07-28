@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/admin-layout}">
+<head>
+    <title layout:fragment="title">Tutor Reviews — Admin</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container-fluid py-4">
+
+        <!-- Nav Pills (Tabs) -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <h4 class="card-title mb-3 mb-md-0">
+                    <i class="bi bi-chat-left-text me-2"></i>
+                    Student Feedback on Tests
+                </h4>
+                <nav class="nav nav-pills">
+                    <a th:href="@{/admin/review-results}"
+                       th:classappend="${currentPath=='/admin/review-results'} ? ' active' : ''"
+                       class="nav-link">
+                        Review Submissions
+                    </a>
+                    <a th:href="@{/admin/tests/tutor-reviews}"
+                       th:classappend="${currentPath=='/admin/tests/tutor-reviews'} ? ' active' : ''"
+                       class="nav-link ms-2">
+                        Tutor Reviews
+                    </a>
+                    <a th:href="@{/admin/tests/student-feedback}"
+                       th:classappend="${currentPath=='/admin/tests/student-feedback'} ? ' active' : ''"
+                       class="nav-link ms-2">
+                        Student Feedback
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success">{{success}}</div>
+        <div th:if="${error}"   class="alert alert-danger">{{error}}</div>
+
+        <!-- Data Table -->
+        <!-- Submission Table -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Test</th>
+                            <th>File</th>
+                            <th>Marks</th>
+                            <th>Feedback</th>
+                            <th>Submit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="submission : ${submissions}">
+                            <form th:action="@{/admin/reply-result}" method="post">
+                                <input type="hidden" name="submissionId" th:value="${submission.id}" />
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <td th:text="${submission.user.fullName}">Student Name</td>
+                                <td th:text="${submission.test.title}">Test Title</td>
+                                <td>
+                                    <a th:href="@{'/admin/download/' + ${submission.fileName}}"
+                                       target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
+                                </td>
+                                <td>
+                                    <input type="number" name="marks" th:value="${submission.marks}"
+                                           class="form-control form-control-sm text-center" required />
+                                </td>
+                                <td>
+                                    <input type="text" name="feedback" th:value="${submission.feedback}"
+                                           class="form-control form-control-sm" required />
+                                </td>
+                                <td>
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="bi bi-send-check"></i> Reply
+                                    </button>
+                                </td>
+                            </form>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
